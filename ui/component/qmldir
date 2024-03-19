@@ -1,0 +1,16 @@
+module material
+Area 1.0 Area.qml
+BlurRectangle 1.0 BlurRectangle.qml
+IconButton 1.0 IconButton.qml
+Navigation 1.0 Navigation.qml
+StatusView 1.0 StatusView.qml
+ScrollablePage 1.0 ScrollablePage.qml
+RaisedButton 1.0 RaisedButton.qml
+FloatingActionButton 1.0 FloatingActionButton.qml
+PaperRipple 1.0 PaperRipple.qml
+TextBox 1.0 TextBox.qml
+FlatButton 1.0 FlatButton.qml
+PaperShadow 1.0 PaperShadow.qml
+SearchBox 1.0 SearchBox.qml
+singleton UIConstants 1.0 UIConstants.qml
+singleton StatusViewType 1.0 StatusViewType.qml

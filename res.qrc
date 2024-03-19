@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="/">
+        <file>res/fonts/MiSans-Regular.ttf</file>
+        <file>res/icon/app.ico</file>
+        <file>res/icon/app.svg</file>
+        <file>res/img/cloud.png</file>
+        <file>res/icon/app.png</file>
+        <file>res/img/manager.svg</file>
+        <file>res/img/noise.png</file>
+        <file>res/img/panel.svg</file>
+        <file>res/img/personal.svg</file>
+        <file>res/img/cancel.svg</file>
+        <file>res/img/search.svg</file>
+        <file>res/img/download.png</file>
+    </qresource>
+</RCC>

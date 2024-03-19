@@ -1,0 +1,26 @@
+<RCC>
+    <qresource prefix="/">
+        <file>ui/window/MainWindow.qml</file>
+        <file>ui/page/LoginPage.qml</file>
+        <file>ui/component/TextBox.qml</file>
+        <file>ui/component/RaisedButton.qml</file>
+        <file>ui/component/FlatButton.qml</file>
+        <file>ui/component/PaperRipple.qml</file>
+        <file>ui/component/PaperShadow.qml</file>
+        <file>ui/component/UIConstants.qml</file>
+        <file>ui/page/MainPage.qml</file>
+        <file>ui/component/Navigation.qml</file>
+        <file>ui/component/BlurRectangle.qml</file>
+        <file>ui/component/IconButton.qml</file>
+        <file>ui/page/Manager.qml</file>
+        <file>ui/page/Panel.qml</file>
+        <file>ui/page/Personal.qml</file>
+        <file>ui/component/ScrollablePage.qml</file>
+        <file>ui/component/StatusView.qml</file>
+        <file>ui/component/Area.qml</file>
+        <file>ui/component/StatusViewType.qml</file>
+        <file>ui/component/qmldir</file>
+        <file>ui/component/SearchBox.qml</file>
+        <file>ui/component/FloatingActionButton.qml</file>
+    </qresource>
+</RCC>
