@@ -32,13 +32,13 @@ Item {
             clip: true
             anchors.fill: parent
             contentWidth: parent.width
-            contentHeight: container.implicitHeight + control.topMargin * 2
+            contentHeight: container.implicitHeight + control.topMargin
             ScrollBar.vertical: ScrollBar {
+                policy: ScrollBar.AsNeeded
                 anchors {
                     right: flickview.right
-                    rightMargin: 2
                     top: parent.top
-                    topMargin: 45
+                    topMargin: 65
                 }
             }
             boundsBehavior: Flickable.StopAtBounds
@@ -58,7 +58,6 @@ Item {
     }
     function showSuccessView() {
         status_view.endLoading()
-
     }
     function showLoadingView() {
         statusMode = StatusViewType.loading

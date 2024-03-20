@@ -12,6 +12,9 @@ Item {
     property alias textColor: label.color
     property alias fontSize: label.font.pointSize
     property bool upper: true
+    property bool hasBorder: fasle
+    property color borderColor: Qt.rgba(226 / 255, 229 / 255, 234 / 255, 1)
+    property alias radius: background.radius
 
     signal clicked
 
@@ -20,6 +23,8 @@ Item {
         anchors.fill: parent
         radius: 3 * 1
         color: button.enabled ? "#00999999" : "#1a999999"
+        border.width: hasBorder ? 1 : 0
+        border.color: borderColor
     }
 
     Text {

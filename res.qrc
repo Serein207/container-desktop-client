@@ -12,5 +12,6 @@
         <file>res/img/cancel.svg</file>
         <file>res/img/search.svg</file>
         <file>res/img/download.png</file>
+        <file>res/img/kylinOS.png</file>
     </qresource>
 </RCC>

@@ -22,5 +22,11 @@
         <file>ui/component/qmldir</file>
         <file>ui/component/SearchBox.qml</file>
         <file>ui/component/FloatingActionButton.qml</file>
+        <file>ui/component/Card.qml</file>
+        <file>ui/component/ToggleButton.qml</file>
+        <file>ui/component/Shadow.qml</file>
+        <file>ui/item/ContainerCard.qml</file>
+        <file>ui/component/Chart.qml</file>
+        <file>ui/component/Chart.js</file>
     </qresource>
 </RCC>

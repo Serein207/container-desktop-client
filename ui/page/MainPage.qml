@@ -57,8 +57,8 @@ Item {
         anchors {
             bottom: parent.bottom
             right: parent.right
-            bottomMargin: 20
-            rightMargin: 20
+            bottomMargin: 30
+            rightMargin: 25
         }
         iconSource: "qrc:/res/img/download.png"
     }

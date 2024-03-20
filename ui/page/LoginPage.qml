@@ -35,10 +35,7 @@ Item {
             source: "qrc:/res/img/cloud.png"
             fillMode: Image.PreserveAspectFit
         }
-    }
-    PaperShadow {
-        source: rect
-        depth: 4
+        Shadow {}
     }
 
     Component {

@@ -9,12 +9,9 @@ Rectangle {
     property int rightPadding: 0
     property int topPadding: 0
     property int bottomPadding: 0
-    radius: 4
-    color: Window.active ? Qt.rgba(38 / 255, 44 / 255, 54 / 255,
-                                   1) : Qt.rgba(39 / 255, 39 / 255, 39 / 255, 1)
-    border.color: Window.active ? Qt.rgba(
-                                      55 / 255, 55 / 255, 55 / 255,
-                                      1) : Qt.rgba(45 / 255, 45 / 255, 45 / 255, 1)
+    radius: 8
+    color: Qt.rgba(251 / 255, 251 / 255, 253 / 255, 1)
+    border.color: Qt.rgba(226 / 255, 229 / 255, 234 / 255, 1)
     border.width: 1
     implicitHeight: height
     implicitWidth: width
@@ -25,5 +22,8 @@ Rectangle {
         anchors.rightMargin: Math.max(paddings, rightPadding)
         anchors.topMargin: Math.max(paddings, topPadding)
         anchors.bottomMargin: Math.max(paddings, bottomPadding)
+    }
+    Shadow {
+        radius: parent.radius
     }
 }
