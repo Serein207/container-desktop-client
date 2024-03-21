@@ -17,18 +17,18 @@ else()
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/release)
 endif()
 
-find_package(Qt6 6.5 REQUIRED COMPONENTS Quick Svg)
+find_package(Qt6 6.5 REQUIRED COMPONENTS Quick)
 
 qt_standard_project_setup(REQUIRES 6.5)
 set(CMAKE_AUTORCC ON)
 
 file(GLOB_RECURSE SOURCE_FILES
     ${CMAKE_SOURCE_DIR}/src/*.cpp
-    ${CMAKE_SOURCE_DIR}/src/*.h
     ${CMAKE_SOURCE_DIR}/src/*.hpp
 )
 
 file(GLOB_RECURSE SOURCE_IMPORT_PATHS
+    ${CMAKE_SOURCE_DIR}/src/ViewModel/*.h
 )
 
 foreach(filepath ${SOURCE_IMPORT_PATHS})
@@ -76,7 +76,7 @@ qt_add_executable(container-desktop
 )
 
 qt_add_qml_module(container-desktop
-    URI container-desktop
+    URI container_desktop
     VERSION 1.0
     SOURCES ${SOURCE_IMPORT_FILES}
     RESOURCES res.qrc
@@ -86,13 +86,13 @@ qt_add_qml_module(container-desktop
 target_include_directories(container-desktop
     PRIVATE
     ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/src/ViewModel
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
 # explicit, fixed bundle identifier manually though.
 set_target_properties(container-desktop PROPERTIES
-#    MACOSX_BUNDLE_GUI_IDENTIFIER com.example.appcontainer-desktop
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
     MACOSX_BUNDLE_INFO_PLIST "${CMAKE_SOURCE_DIR}/.cmake/Info.plist.in"
@@ -101,7 +101,7 @@ set_target_properties(container-desktop PROPERTIES
 )
 
 target_link_libraries(container-desktop
-    PRIVATE Qt6::Quick Qt6::Svg
+    PRIVATE Qt6::Quick
 )
 
 include(GNUInstallDirs)

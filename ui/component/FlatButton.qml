@@ -12,7 +12,7 @@ Item {
     property alias textColor: label.color
     property alias fontSize: label.font.pointSize
     property bool upper: true
-    property bool hasBorder: fasle
+    property bool hasBorder: false
     property color borderColor: Qt.rgba(226 / 255, 229 / 255, 234 / 255, 1)
     property alias radius: background.radius
 

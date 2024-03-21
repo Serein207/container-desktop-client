@@ -1,6 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Controls
 import QtQuick.Layouts
+import container_desktop
 import "../component"
 import "../window"
 
@@ -45,7 +46,7 @@ Item {
             height: control.height
             Text {
                 id: text_welcome
-                text: "Welcom back!"
+                text: "Welcome back!"
                 font.pointSize: 24
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: parent.top
@@ -89,8 +90,10 @@ Item {
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: textBox_passwd.bottom
                 anchors.topMargin: 50
+                enabled: textBox_username.text !== "" && textBox_passwd.text !== "" 
                 onClicked: {
-                    enterMainPage()
+                    LoginViewModel.login(textBox_username.text, textBox_passwd.text)
+                    //enterMainPage()
                 }
             }
         }
