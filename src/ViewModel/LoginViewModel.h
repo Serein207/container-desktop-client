@@ -1,4 +1,6 @@
-#pragma once
+#ifndef LOGIN_VIEW_MODEL_H
+#define LOGIN_VIEW_MODEL_H
+
 #include <QObject>
 #include <QtQml/QQmlEngine>
 
@@ -9,7 +11,7 @@ class LoginViewModel : public QObject {
 
 public:
     explicit LoginViewModel(QObject* parent = nullptr);
-    Q_INVOKABLE void login(const QString& username, const QString& password);
+    Q_INVOKABLE void login(QStringView username, QStringView password);
 
 signals:
     void loginSuccess();
@@ -17,3 +19,5 @@ signals:
     void logoutSuccess();
     void logoutFailed(QString message);
 };
+
+#endif // LOGIN_VIEW_MODEL_H

@@ -1,6 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Controls
 import "../page"
+import "../component"
 
 ApplicationWindow {
     id: window
@@ -32,5 +33,22 @@ ApplicationWindow {
     function enterMainPage() {
         loader.sourceComponent = mainPage
         loginPage.destroy()
+    }
+
+    InfoBar {
+        id: infoBar
+        root: window
+    }
+    function showSuccess(text, duration) {
+        infoBar.showSuccess(text, duration)
+    }
+    function showInfo(text, duration) {
+        infoBar.showInfo(text, duration)
+    }
+    function showWarning(text, duration) {
+        infoBar.showWarning(text, duration)
+    }
+    function showError(text, duration) {
+        infoBar.showError(text, duration)
     }
 }

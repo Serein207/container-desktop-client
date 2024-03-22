@@ -2,6 +2,7 @@
 #define NETWORKCLIENT_H
 
 #include "Infrastructure/Utility/Result.hpp"
+#include "Model/User.h"
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QNetworkAccessManager>
@@ -12,9 +13,10 @@
 #include <functional>
 
 namespace ContainerDesktop {
-namespace ContainerDesktopDetails {
+inline namespace ContainerDesktopDetails {
 constexpr int SUCCESS_CODES[] = {200, 201, 302, 400, 502, 800, 801, 802, 803};
-}
+enum class Method { UNSPECIFIED, GET, POST, PUT, DELETE };
+} // namespace ContainerDesktopDetails
 
 class NetworkClient : public QObject {
     Q_OBJECT
@@ -23,7 +25,7 @@ public:
     ~NetworkClient();
     static NetworkClient* getInstance();
     template <typename TEncryption, typename TCallback>
-    void request(const QByteArray& verb, const QUrl& url,
+    void request(ContainerDesktopDetails::Method verb, const QUrl& url,
                  const QJsonDocument& data, TCallback callback) {
         auto requestResult =
             TEncryption::makeRequest(verb, url, manager.cookieJar(), data);
@@ -46,7 +48,7 @@ public:
             auto content = reply->readAll();
             auto networkError = reply->error();
 
-            qDebug() << content;
+            qDebug() << content.toStdString().c_str();
 
             if (networkError != QNetworkReply::NoError) {
                 callback(Result<QJsonObject>(
@@ -64,7 +66,7 @@ public:
             }
             auto jsonResult =
                 QJsonDocument::fromJson(std::move(decryptedResult).unwrap());
-            if (jsonResult.isNull()) {
+            if (jsonResult.isNull() || jsonResult["data"].isNull()) {
                 callback(Result<QJsonObject>(ErrorInfo{
                     ErrorKind::JsonParseError, "Failed to parse JSON"}));
                 reply->deleteLater();
@@ -90,19 +92,19 @@ public:
                     return;
                 }
             }
-            callback(Result<QJsonObject>(json));
+            callback(Result<QJsonObject>(json["data"].toObject()));
             reply->deleteLater();
         });
     }
 
     void setCookieJar(QNetworkCookieJar* cookieJar);
     void login(QStringView username, QStringView password,
-               std::function<void(Result<QJsonObject>)> callback);
+               std::function<void(Result<User>)> callback);
 
 private:
     QNetworkAccessManager manager;
     QByteArray tokenBytes;
-    QNetworkReply* createReply(const QByteArray& verb,
+    QNetworkReply* createReply(ContainerDesktop::Method verb,
                                const QNetworkRequest& requestInfo,
                                const QByteArray& body);
 };

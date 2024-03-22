@@ -82,6 +82,7 @@ Item {
                 }
             }
             RaisedButton {
+                id: btn_login
                 width: 300
                 text: "login"
                 color: "#2196f3"
@@ -90,12 +91,28 @@ Item {
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: textBox_passwd.bottom
                 anchors.topMargin: 50
-                enabled: textBox_username.text !== "" && textBox_passwd.text !== "" 
+                enabled: textBox_username.text !== ""
+                         && textBox_passwd.text !== ""
                 onClicked: {
-                    LoginViewModel.login(textBox_username.text, textBox_passwd.text)
-                    //enterMainPage()
+                    loading = true
+                    LoginViewModel.login(textBox_username.text,
+                                         textBox_passwd.text)
                 }
             }
+            Connections {
+                target: LoginViewModel
+                function onLoginFailed(message) {
+                    btn_login.loading = false
+                    showError("Error: " + message, 4000)
+                }
+            }
+        }
+    }
+
+    Connections {
+        target: LoginViewModel
+        function onLoginSuccess() {
+            enterMainPage()
         }
     }
 

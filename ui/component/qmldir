@@ -14,6 +14,10 @@ TextBox 1.0 TextBox.qml
 FlatButton 1.0 FlatButton.qml
 PaperShadow 1.0 PaperShadow.qml
 SearchBox 1.0 SearchBox.qml
+InfoBar 1.0 InfoBar.qml
+ProgressRing 1.0 ProgressRing.qml
+Chart 1.0 Chart.qml
 Shadow 1.0 Shadow.qml
+MaterialObject 1.0 MaterialObject.qml
 singleton UIConstants 1.0 UIConstants.qml
 singleton StatusViewType 1.0 StatusViewType.qml

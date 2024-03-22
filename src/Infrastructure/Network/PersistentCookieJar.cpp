@@ -27,10 +27,8 @@ void PersistentCookieJar::save() {
     QByteArray data;
 
     foreach (QNetworkCookie cookie, list) {
-        if (!cookie.isSessionCookie()) {
-            data.append(cookie.toRawForm());
-            data.append("\n");
-        }
+        data.append(cookie.toRawForm());
+        data.append(";");
     }
     settings.setValue("Cookies", data);
 }

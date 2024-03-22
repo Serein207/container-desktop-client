@@ -28,5 +28,8 @@
         <file>ui/item/ContainerCard.qml</file>
         <file>ui/component/Chart.qml</file>
         <file>ui/component/Chart.js</file>
+        <file>ui/component/InfoBar.qml</file>
+        <file>ui/component/MaterialObject.qml</file>
+        <file>ui/component/ProgressRing.qml</file>
     </qresource>
 </RCC>

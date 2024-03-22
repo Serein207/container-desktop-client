@@ -1,6 +1,8 @@
 #include "NetworkClient.h"
 #include "Api2.hpp"
+#include "Infrastructure/Deserializer/Deserializer.hpp"
 #include <QNetworkProxy>
+#include <qnetworkcookie.h>
 
 static auto API_GATEWAY = QStringLiteral("https://container-desk.top");
 
@@ -17,21 +19,28 @@ ContainerDesktop::NetworkClient*
 }
 
 QNetworkReply* ContainerDesktop::NetworkClient::createReply(
-    const QByteArray& verb, const QNetworkRequest& requestInfo,
+    ContainerDesktop::Method verb, const QNetworkRequest& requestInfo,
     const QByteArray& body) {
-    if (verb.compare("POST", Qt::CaseInsensitive) == 0) {
+    switch (verb) {
+    case Method::POST: {
         return manager.post(requestInfo, body);
-    } else if (verb.compare("PUT", Qt::CaseInsensitive) == 0) {
+    }
+    case Method::PUT: {
         return manager.put(requestInfo, body);
-    } else if (verb.compare("DELETE", Qt::CaseInsensitive) == 0) {
+    }
+    case Method::DELETE: {
         assert(body.isEmpty());
         return manager.deleteResource(requestInfo);
-    } else if (verb.compare("GET", Qt::CaseInsensitive) == 0) {
+    }
+    case Method::GET: {
         assert(body.isEmpty());
         return manager.get(requestInfo);
-    } else {
-        return manager.sendCustomRequest(requestInfo, verb, body);
     }
+    case Method::UNSPECIFIED: {
+        return manager.sendCustomRequest(requestInfo, "INVALID", body);
+    }
+    }
+    return nullptr;
 }
 
 void ContainerDesktop::NetworkClient::setCookieJar(
@@ -41,17 +50,21 @@ void ContainerDesktop::NetworkClient::setCookieJar(
 
 void ContainerDesktop::NetworkClient::login(
     QStringView username, QStringView password,
-    std::function<void(Result<QJsonObject>)> callback) {
+    std::function<void(Result<User>)> callback) {
     auto url = QUrl(API_GATEWAY + "/api2/json/access/ticket");
-    auto data = QJsonDocument(QJsonObject{{"username", username.toString()},
-                                          {"password", password.toString()}});
+    auto data = QJsonDocument(
+        QJsonObject{{"username", username.toString() + u"@pve"_qs},
+                    {"password", password.toString()}});
     request<Api2>(
-        "POST", url, data,
+        Method::POST, url, data,
         [callback = std::move(callback), this](Result<QJsonObject> result) {
             if (result.isOk()) {
+                auto data = result.unwrap()["data"].toObject();
                 this->tokenBytes =
-                    result.unwrap()["CSRFPreventionToken"].toString().toUtf8();
+                    data["CSRFPreventionToken"].toString().toUtf8();
+                manager.cookieJar()->insertCookie(QNetworkCookie(
+                    "PVEAuthCookie", data["ticket"].toString().toUtf8()));
             }
-            callback(result);
+            callback(result.andThen(Deserializer<User>::from));
         });
 }

@@ -1,4 +1,5 @@
 #include "Infrastructure/Network/NetworkClient.h"
+#include "Infrastructure/Network/PersistentCookieJar.h"
 #include <QFontDatabase>
 #include <QGuiApplication>
 #include <QIcon>
@@ -23,7 +24,7 @@ int main(int argc, char* argv[]) {
         QGuiApplication::setFont(QFont(fontFamilies[0]));
 
     ContainerDesktop::NetworkClient::getInstance()->setCookieJar(
-        new QNetworkCookieJar);
+        new PersistentCookieJar);
 
     QQmlApplicationEngine engine;
     const QUrl url(QStringLiteral("qrc:/ui/window/MainWindow.qml"));
