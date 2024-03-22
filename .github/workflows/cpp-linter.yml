@@ -1,0 +1,69 @@
+name: cpp-linter
+
+permissions:
+  checks: write
+  pull-requests: write
+  repository-projects: write
+
+on:
+  push:
+    paths:
+      - "*.txt"
+      - "src/**"
+      - "!**.qml"
+      - "!**.md"
+      - "!**.cmake"
+      - ".github/**"
+  pull_request:
+    paths:
+      - "src/**"
+      - "!**.qml"
+      - "!**.md"
+      - "!**.cmake"  
+  workflow_dispatch:
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  cpp-linter:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: 'recursive'
+  
+    - name: Setup Ninja
+      uses: ashutoshvarma/setup-ninja@v1.1
+      with:
+        version: '1.11.1'
+
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: '6.6.2'
+        modules: 'qt5compat'
+        cache: 'true'
+        cache-key-prefix: 'install-qt-action'
+
+    - name: Configure CMake
+      run: cmake -G Ninja -S ${{github.workspace}} -B ${{github.workspace}}/build -DCMAKE_PREFIX_PATH=${{env.Qt6_DIR}} -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+    - uses: cpp-linter/cpp-linter-action@v2
+      id: linter
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        version: '16'
+        style: file
+        database: ${{github.workspace}}/build
+        tidy-checks: -modernize-use-trailing-return-type,-readability-avoid-const-params-in-decls
+        file-annotations: false
+        step-summary: true
+        thread-comments: ${{ github.event_name == 'pull_request' }}
+        lines-changed-only: false
+        files-changed-only: true
+
+    - name: Failed if needed
+      if: steps.linter.outputs.checks-failed > 0
+      run: exit 1
