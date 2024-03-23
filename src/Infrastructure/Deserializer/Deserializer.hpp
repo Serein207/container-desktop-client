@@ -15,13 +15,11 @@ template <>
 struct Deserializer<User> {
     static Result<User> from(const QJsonValue& value) {
         if (!value.isObject()) {
-            return ErrorInfo(ErrorKind::JsonDeserializeError,
-                             "Invalid JSON type");
+            return ErrorInfo(ErrorKind::JsonDeserializeError, "Invalid JSON type");
         }
         auto obj = value.toObject();
         if (!obj.contains("username")) {
-            return ErrorInfo(ErrorKind::JsonDeserializeError,
-                             "Invalid JSON type");
+            return ErrorInfo(ErrorKind::JsonDeserializeError, "Invalid JSON type");
         }
         auto username = obj["username"].toString();
         return User{username};

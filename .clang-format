@@ -6,7 +6,7 @@ AllowShortFunctionsOnASingleLine:	Empty
 TabWidth:	                        4
 UseTab:	                          Never
 PointerAlignment:	                Left
-ColumnLimit:	                    80
+ColumnLimit:	                    100
 AlwaysBreakTemplateDeclarations:	true
 BreakStringLiterals:              false
 IndentCaseLabels:	                false

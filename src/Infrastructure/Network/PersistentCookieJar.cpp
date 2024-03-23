@@ -1,7 +1,6 @@
 #include "PersistentCookieJar.h"
 
-PersistentCookieJar::PersistentCookieJar(QObject* parent)
-    : QNetworkCookieJar(parent) {
+PersistentCookieJar::PersistentCookieJar(QObject* parent) : QNetworkCookieJar(parent) {
     load();
 }
 
@@ -9,14 +8,13 @@ PersistentCookieJar::~PersistentCookieJar() {
     save();
 }
 
-QList<QNetworkCookie>
-    PersistentCookieJar::cookiesForUrl(const QUrl& url) const {
+QList<QNetworkCookie> PersistentCookieJar::cookiesForUrl(const QUrl& url) const {
     QMutexLocker lock(&mutex);
-    return QNetworkCookieJar::cookiesForUrl(url);
+    return allCookies();
 }
 
-bool PersistentCookieJar::setCookiesFromUrl(
-    const QList<QNetworkCookie>& cookieList, const QUrl& url) {
+bool PersistentCookieJar::setCookiesFromUrl(const QList<QNetworkCookie>& cookieList,
+                                            const QUrl& url) {
     QMutexLocker lock(&mutex);
     return QNetworkCookieJar::setCookiesFromUrl(cookieList, url);
 }

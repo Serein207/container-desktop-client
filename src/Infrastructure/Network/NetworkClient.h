@@ -10,25 +10,25 @@
 #include <QStringView>
 #include <QThread>
 #include <QUrl>
-#include <functional>
+#include <qjsonobject.h>
 
 namespace ContainerDesktop {
 inline namespace ContainerDesktopDetails {
-constexpr int SUCCESS_CODES[] = {200, 201, 302, 400, 502, 800, 801, 802, 803};
+constexpr int SUCCESS_CODES[] = {0, 1};
 enum class Method { UNSPECIFIED, GET, POST, PUT, DELETE };
 } // namespace ContainerDesktopDetails
 
 class NetworkClient : public QObject {
     Q_OBJECT
+
 public:
     NetworkClient();
     ~NetworkClient();
     static NetworkClient* getInstance();
     template <typename TEncryption, typename TCallback>
-    void request(ContainerDesktopDetails::Method verb, const QUrl& url,
-                 const QJsonDocument& data, TCallback callback) {
-        auto requestResult =
-            TEncryption::makeRequest(verb, url, manager.cookieJar(), data);
+    void request(ContainerDesktopDetails::Method verb, const QUrl& url, const QJsonDocument& data,
+                 TCallback callback) {
+        auto requestResult = TEncryption::makeRequest(verb, url, manager.cookieJar(), data);
         auto [requestInfo, body] = std::move(requestResult);
         if (!tokenBytes.isEmpty())
             requestInfo.setRawHeader("CSRFPreventionToken", tokenBytes);
@@ -38,8 +38,7 @@ public:
         } else {
             QMetaObject::invokeMethod(
                 &manager,
-                [this, &verb, requestInfo = std::move(requestInfo),
-                 body = std::move(body)] {
+                [this, &verb, requestInfo = std::move(requestInfo), body = std::move(body)] {
                     return createReply(verb, requestInfo, body);
                 },
                 Qt::BlockingQueuedConnection, &reply);
@@ -51,61 +50,67 @@ public:
             qDebug() << content.toStdString().c_str();
 
             if (networkError != QNetworkReply::NoError) {
-                callback(Result<QJsonObject>(
-                    ErrorInfo{ErrorKind::NetworkError, reply->errorString()}));
+                callback(
+                    Result<QJsonObject>(ErrorInfo{ErrorKind::NetworkError, reply->errorString()}));
                 reply->deleteLater();
                 return;
             }
-            Result<QByteArray> decryptedResult = TEncryption::decryptResponse(
-                reply->rawHeader("Content-Type"), std::move(content));
+            Result<QByteArray> decryptedResult =
+                TEncryption::decryptResponse(reply->rawHeader("Content-Type"), std::move(content));
             if (decryptedResult.isErr()) {
-                callback(Result<QJsonObject>(
-                    std::move(decryptedResult).unwrapErr()));
+                callback(Result<QJsonObject>(std::move(decryptedResult).unwrapErr()));
                 reply->deleteLater();
                 return;
             }
-            auto jsonResult =
-                QJsonDocument::fromJson(std::move(decryptedResult).unwrap());
-            if (jsonResult.isNull() || jsonResult["data"].isNull()) {
-                callback(Result<QJsonObject>(ErrorInfo{
-                    ErrorKind::JsonParseError, "Failed to parse JSON"}));
+            auto jsonResult = QJsonDocument::fromJson(std::move(decryptedResult).unwrap());
+            if (jsonResult.isNull()) {
+                callback(Result<QJsonObject>(
+                    ErrorInfo{ErrorKind::JsonParseError, "Failed to parse JSON"}));
                 reply->deleteLater();
                 return;
             }
             auto json = jsonResult.object();
-            if (json.contains("code")) {
-                int code = json["code"].toInt();
-                auto found = std::find_if(
-                    std::begin(ContainerDesktopDetails::SUCCESS_CODES),
-                    std::end(ContainerDesktopDetails::SUCCESS_CODES),
-                    [code](int x) { return x == code; });
-                if (found == std::end(ContainerDesktopDetails::SUCCESS_CODES)) {
+            if (json.contains("success")) {
+                int code = json["success"].toInt();
+                if (code == 0) {
                     QString message;
                     if (json.contains("message")) {
                         message = json["message"].toString();
                     } else {
-                        message =
-                            QStringLiteral("API error code = %1").arg(code);
+                        message = QStringLiteral("API error code = %1").arg(code);
                     }
-                    callback(Result<QJsonObject>(
-                        ErrorInfo{ErrorKind::ApiError, std::move(message)}));
+                    callback(
+                        Result<QJsonObject>(ErrorInfo{ErrorKind::ApiError, std::move(message)}));
                     return;
                 }
             }
-            callback(Result<QJsonObject>(json["data"].toObject()));
+            if (json.contains("data")) {
+                QJsonObject data;
+                if (json["data"].isNull())
+                    data = QJsonObject{};
+                else
+                    data = json["data"].toObject();
+                callback(Result<QJsonObject>(data));
+            }
             reply->deleteLater();
         });
     }
 
+    QByteArray getTicket() {
+        return ticket;
+    }
+
     void setCookieJar(QNetworkCookieJar* cookieJar);
-    void login(QStringView username, QStringView password,
+    void login(const QString& username, const QString& password,
                std::function<void(Result<User>)> callback);
+    void registerUser(const QString& username, const QString& password,
+                      std::function<void(Result<QJsonObject>)> callback);
 
 private:
     QNetworkAccessManager manager;
     QByteArray tokenBytes;
-    QNetworkReply* createReply(ContainerDesktop::Method verb,
-                               const QNetworkRequest& requestInfo,
+    QByteArray ticket;
+    QNetworkReply* createReply(ContainerDesktop::Method verb, const QNetworkRequest& requestInfo,
                                const QByteArray& body);
 };
 } // namespace ContainerDesktop

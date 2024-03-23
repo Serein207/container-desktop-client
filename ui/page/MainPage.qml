@@ -1,5 +1,6 @@
 import QtQuick 2.15
 import QtQuick.Controls
+import container_desktop
 import "../component"
 
 Item {
@@ -43,7 +44,7 @@ Item {
             }
         }
         FlatButton {
-            text: "admin"
+            text: LoginViewModel.username
             upper: false
             anchors {
                 right: parent.right

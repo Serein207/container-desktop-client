@@ -1,6 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Controls
 import QtQuick.Layouts
+import QtCore
 import container_desktop
 import "../component"
 import "../window"
@@ -12,6 +13,10 @@ Item {
         initialItem: login
         anchors.fill: parent
         anchors.leftMargin: control.width / 2
+        Component.onCompleted: {
+            if (settings.value("username", "") !== "")
+                push(auto_login)
+        }
     }
     Rectangle {
         id: rect
@@ -37,6 +42,78 @@ Item {
             fillMode: Image.PreserveAspectFit
         }
         Shadow {}
+    }
+
+    Settings {
+        id: settings
+        property string username
+    }
+
+    Connections {
+        target: LoginViewModel
+        function onLoginFailed(message) {
+            showError("Error: " + message, 4000)
+            if (stackView.currentItem.objectName == auto_login.objectName)
+                stackView.pop()
+        }
+    }
+
+    Connections {
+        target: LoginViewModel
+        function onLoginSuccess() {
+            enterMainPage()
+        }
+    }
+
+    Component {
+        id: auto_login
+        Item {
+            width: control.width / 2
+            height: control.height
+            Text {
+                id: text_welcome
+                text: "Welcome back!"
+                font.pointSize: 24
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.top: parent.top
+                anchors.topMargin: control.height / 5
+            }
+            Text {
+                id: textBox_username
+                width: 300
+                text: settings.username
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.top: text_welcome.bottom
+                anchors.topMargin: 100
+            }
+            FlatButton {
+                text: "更换账号"
+                textColor: "#8a999999"
+                fontSize: 8
+                height: 15
+                anchors.top: textBox_username.bottom
+                anchors.topMargin: 5
+                anchors.right: textBox_username.right
+                onClicked: {
+                    stackView.push(login)
+                }
+            }
+            RaisedButton {
+                id: btn_login
+                width: 300
+                text: "login"
+                color: "#2196f3"
+                textColor: "#fff"
+                rippleColor: "#fff"
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.top: textBox_username.bottom
+                anchors.topMargin: 50
+                onClicked: {
+                    loading = true
+                    LoginViewModel.updateStatus()
+                }
+            }
+        }
     }
 
     Component {
@@ -103,16 +180,8 @@ Item {
                 target: LoginViewModel
                 function onLoginFailed(message) {
                     btn_login.loading = false
-                    showError("Error: " + message, 4000)
                 }
             }
-        }
-    }
-
-    Connections {
-        target: LoginViewModel
-        function onLoginSuccess() {
-            enterMainPage()
         }
     }
 

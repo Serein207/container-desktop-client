@@ -17,14 +17,12 @@ int main(int argc, char* argv[]) {
     QGuiApplication app(argc, argv);
     QGuiApplication::setWindowIcon(QIcon(QStringLiteral(":/res/icon/app.png")));
 
-    auto fontId =
-        QFontDatabase::addApplicationFont(":/res/fonts/MiSans-Regular.ttf");
+    auto fontId = QFontDatabase::addApplicationFont(":/res/fonts/MiSans-Regular.ttf");
     QStringList fontFamilies = QFontDatabase::applicationFontFamilies(fontId);
     if (!fontFamilies.empty())
         QGuiApplication::setFont(QFont(fontFamilies[0]));
 
-    ContainerDesktop::NetworkClient::getInstance()->setCookieJar(
-        new PersistentCookieJar);
+    ContainerDesktop::NetworkClient::getInstance()->setCookieJar(new PersistentCookieJar);
 
     QQmlApplicationEngine engine;
     const QUrl url(QStringLiteral("qrc:/ui/window/MainWindow.qml"));

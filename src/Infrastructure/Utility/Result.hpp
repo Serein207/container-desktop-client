@@ -209,9 +209,9 @@ inline QDebug operator<<(QDebug debug, const ErrorInfo& it) {
     return debug;
 }
 
-template <
-    typename T,
-    std::enable_if_t<!std::is_void_v<decltype(*static_cast<QDebug*>(nullptr) << *static_cast<T*>(nullptr))>, int> = 0>
+template <typename T, std::enable_if_t<!std::is_void_v<decltype(*static_cast<QDebug*>(nullptr)
+                                                                << *static_cast<T*>(nullptr))>,
+                                       int> = 0>
 QDebug operator<<(QDebug debug, const Result<T>& it) {
     QDebugStateSaver saver(debug);
     if (it.isOk()) {

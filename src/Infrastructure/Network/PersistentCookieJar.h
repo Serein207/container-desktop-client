@@ -12,8 +12,7 @@ public:
     PersistentCookieJar(QObject* parent = nullptr);
     ~PersistentCookieJar();
     virtual QList<QNetworkCookie> cookiesForUrl(const QUrl& url) const;
-    virtual bool setCookiesFromUrl(const QList<QNetworkCookie>& cookieList,
-                                   const QUrl& url);
+    virtual bool setCookiesFromUrl(const QList<QNetworkCookie>& cookieList, const QUrl& url);
 
 private:
     void save();
