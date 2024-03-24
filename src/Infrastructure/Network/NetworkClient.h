@@ -3,6 +3,7 @@
 
 #include "Infrastructure/Utility/Result.hpp"
 #include "Model/User.h"
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QNetworkAccessManager>
@@ -10,7 +11,9 @@
 #include <QStringView>
 #include <QThread>
 #include <QUrl>
+#include <qjsonarray.h>
 #include <qjsonobject.h>
+#include <type_traits>
 
 namespace ContainerDesktop {
 inline namespace ContainerDesktopDetails {
@@ -85,12 +88,18 @@ public:
                 }
             }
             if (json.contains("data")) {
-                QJsonObject data;
-                if (json["data"].isNull())
-                    data = QJsonObject{};
-                else
-                    data = json["data"].toObject();
-                callback(Result<QJsonObject>(data));
+                if constexpr (std::is_invocable_v<TCallback, Result<QJsonObject>>) {
+                    if (json["data"].isObject())
+                        callback(Result<QJsonObject>(json["data"].toObject()));
+                    else if (json["data"].isNull())
+                        callback(Result<QJsonObject>(QJsonObject{}));
+                } else if constexpr (std::is_invocable_v<TCallback, Result<QJsonArray>>) {
+                    if (json["data"].isArray())
+                        callback(Result<QJsonArray>(json["data"].toArray()));
+                    else if (json["data"].isNull())
+                        callback(Result<QJsonArray>(
+                            ErrorInfo{ErrorKind::JsonParseError, "Failed to parse JSON"}));
+                }
             }
             reply->deleteLater();
         });
