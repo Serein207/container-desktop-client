@@ -2,6 +2,7 @@
 #define NETWORKCLIENT_H
 
 #include "Infrastructure/Utility/Result.hpp"
+#include "Model/ContainerBlock.h"
 #include "Model/User.h"
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -28,7 +29,9 @@ public:
     NetworkClient();
     ~NetworkClient();
     static NetworkClient* getInstance();
-    template <typename TEncryption, typename TCallback>
+    template <typename TEncryption, typename TCallback,
+              typename QJsonType = std::conditional_t<
+                  std::is_invocable_v<TCallback, Result<QJsonObject>>, QJsonObject, QJsonArray>>
     void request(ContainerDesktopDetails::Method verb, const QUrl& url, const QJsonDocument& data,
                  TCallback callback) {
         auto requestResult = TEncryption::makeRequest(verb, url, manager.cookieJar(), data);
@@ -54,20 +57,20 @@ public:
 
             if (networkError != QNetworkReply::NoError) {
                 callback(
-                    Result<QJsonObject>(ErrorInfo{ErrorKind::NetworkError, reply->errorString()}));
+                    Result<QJsonType>(ErrorInfo{ErrorKind::NetworkError, reply->errorString()}));
                 reply->deleteLater();
                 return;
             }
             Result<QByteArray> decryptedResult =
                 TEncryption::decryptResponse(reply->rawHeader("Content-Type"), std::move(content));
             if (decryptedResult.isErr()) {
-                callback(Result<QJsonObject>(std::move(decryptedResult).unwrapErr()));
+                callback(Result<QJsonType>(std::move(decryptedResult).unwrapErr()));
                 reply->deleteLater();
                 return;
             }
             auto jsonResult = QJsonDocument::fromJson(std::move(decryptedResult).unwrap());
             if (jsonResult.isNull()) {
-                callback(Result<QJsonObject>(
+                callback(Result<QJsonType>(
                     ErrorInfo{ErrorKind::JsonParseError, "Failed to parse JSON"}));
                 reply->deleteLater();
                 return;
@@ -82,8 +85,7 @@ public:
                     } else {
                         message = QStringLiteral("API error code = %1").arg(code);
                     }
-                    callback(
-                        Result<QJsonObject>(ErrorInfo{ErrorKind::ApiError, std::move(message)}));
+                    callback(Result<QJsonType>(ErrorInfo{ErrorKind::ApiError, std::move(message)}));
                     return;
                 }
             }
@@ -114,6 +116,9 @@ public:
                std::function<void(Result<User>)> callback);
     void registerUser(const QString& username, const QString& password,
                       std::function<void(Result<QJsonObject>)> callback);
+    void getClusterStatusInfo(std::function<void(Result<QJsonArray>)> callback);
+    void getAllContainerInfo(const QString& node,
+                             std::function<void(Result<QList<ContainerBlock>>)> callback);
 
 private:
     QNetworkAccessManager manager;

@@ -58,6 +58,7 @@ Item {
     }
     function showSuccessView() {
         status_view.endLoading()
+        statusMode = StatusViewType.success
     }
     function showLoadingView() {
         statusMode = StatusViewType.loading

@@ -1,5 +1,6 @@
 import QtQuick 2.15
 import QtQuick.Layouts
+import container_desktop
 import "../item"
 import "../component"
 
@@ -12,17 +13,42 @@ ScrollablePage {
         implicitWidth: contentWidth
         width: implicitWidth
         height: implicitHeight
-        model: 12
-        cellHeight: 250
+        model: ContainerBlockViewModel
+        cellHeight: 260
         cellWidth: 380
         delegate: ContainerCard {
-            name: "KylinOS"
+            name: model.name
             source: "qrc:/res/img/kylinOS.png"
-            info: "3abf3s324"
-            createTime: "2023-2-23"
-            status: "运行中"
-            leftMemory: "4GB"
-            remark: "上课时用的系统"
+            info: model.vmId
+            cpu: model.cpu
+            memory: model.mem
+            status: model.status
+            remark: model.remark
         }
+    }
+
+    Component.onCompleted: {
+        showLoadingView()
+        ContainerBlockViewModel.load()
+    }
+
+    Connections {
+        target: ContainerBlockViewModel
+        function onLoadSuccess() {
+            showSuccessView()
+        }
+    }
+
+    Connections {
+        target: ContainerBlockViewModel
+        function onLoadFailed(message) {
+            showError("Error: " + message, 4000)
+            showErrorView()
+        }
+    }
+
+    onErrorClicked: {
+        showLoadingView()
+        ContainerBlockViewModel.load()
     }
 }

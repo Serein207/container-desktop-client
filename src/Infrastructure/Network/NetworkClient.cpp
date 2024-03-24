@@ -2,12 +2,10 @@
 #include "Api2.hpp"
 #include "Infrastructure/Deserializer/Deserializer.hpp"
 #include "Infrastructure/Utility/Result.hpp"
+#include "Model/ContainerBlock.h"
 #include <QNetworkProxy>
 #include <functional>
-#include <qjsondocument.h>
-#include <qjsonobject.h>
-#include <qnetworkcookie.h>
-#include <qurl.h>
+#include <qjsonarray.h>
 
 static auto API_GATEWAY = QStringLiteral("https://container-desk.top");
 
@@ -52,7 +50,6 @@ void ContainerDesktop::NetworkClient::setCookieJar(QNetworkCookieJar* cookieJar)
     auto cookies = cookieJar->cookiesForUrl(API_GATEWAY);
     if (!cookies.empty())
         this->ticket = cookies.first().value();
-    qDebug() << this->ticket;
 }
 
 void ContainerDesktop::NetworkClient::login(const QString& username, const QString& password,
@@ -82,4 +79,23 @@ void ContainerDesktop::NetworkClient::registerUser(
     request<Api2>(
         Method::POST, url, data,
         [callback = std::move(callback)](Result<QJsonObject> result) { callback(result); });
+}
+
+void ContainerDesktop::NetworkClient::getClusterStatusInfo(
+    std::function<void(Result<QJsonArray>)> callback) {
+    auto url = QUrl(API_GATEWAY + "/api2/json/cluster/status");
+    auto data = QJsonDocument();
+    request<Api2>(
+        Method::GET, url, data,
+        [callback = std::move(callback)](Result<QJsonArray> result) { callback(result); });
+}
+
+void ContainerDesktop::NetworkClient::getAllContainerInfo(
+    const QString& node, std::function<void(Result<QList<ContainerBlock>>)> callback) {
+    auto url = QUrl(API_GATEWAY + "/api2/json/nodes/" + node + "/lxc");
+    auto data = QJsonDocument();
+    request<Api2>(Method::GET, url, data,
+                  [callback = std::move(callback)](Result<QJsonArray> result) {
+                      callback(result.andThen(Deserializer<QList<ContainerBlock>>::from));
+                  });
 }

@@ -4,17 +4,17 @@ import "../component"
 Area {
     id: control
     property url source: "qrc:/res/img/kylinOS.png"
-    property string name: ""
-    property string info: ""
-    property string createTime: ""
-    property string status: ""
-    property string leftMemory: ""
-    property string remark: ""
+    property string name
+    property string info
+    property double cpu
+    property string status
+    property string memory
+    property string remark
     signal deleteClicked
     signal rebootClicked
     signal settingClicked
     width: 366
-    height: 236
+    height: 246
     radius: 12
     Image {
         id: img
@@ -38,8 +38,7 @@ Area {
         }
     }
     Text {
-        id: name
-        text: control.name
+        text: name
         font.pointSize: 16
         anchors {
             top: img.top
@@ -48,8 +47,7 @@ Area {
         }
     }
     Text {
-        id: info
-        text: control.info
+        text: info
         font.pointSize: 12
         color: "#718096"
         anchors {
@@ -59,29 +57,18 @@ Area {
         }
     }
     Text {
-        id: text1
+        id: desc
         font.pointSize: 12
         color: "#718096"
-        text: String("创建于：%1  状态：%2  剩余：%3").arg(control.createTime).arg(
-                  control.status).arg(control.leftMemory)
+        text: "CPU占用：" + cpu + "%\n内存占用：" + memory + "\n状态：" + status + "\n备注：" + remark
         anchors {
             top: img.bottom
             left: parent.left
             leftMargin: 15
-            topMargin: 20
-        }
-    }
-    Text {
-        id: text2
-        font.pointSize: 12
-        color: "#718096"
-        text: String("备注：%1").arg(control.remark)
-        anchors {
-            top: text1.bottom
-            left: text1.left
             topMargin: 15
         }
     }
+
     Row {
         anchors {
             bottom: parent.bottom

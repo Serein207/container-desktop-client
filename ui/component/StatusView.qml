@@ -139,11 +139,11 @@ Item {
                 anchors.centerIn: parent
                 Text {
                     text: control.errorText
-                    font: FluTextStyle.BodyStrong
                     Layout.alignment: Qt.AlignHCenter
                 }
-                RaisedButton {
+                FlatButton {
                     id: btn_error
+                    upper: false
                     Layout.alignment: Qt.AlignHCenter
                     text: control.errorButtonText
                     onClicked: {
