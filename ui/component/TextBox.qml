@@ -1,7 +1,7 @@
 import QtQuick 2.15
 import "."
 
-Item {
+FocusScope {
     id: control
     implicitWidth: input.contentWidth
     implicitHeight: Math.max(input.contentHeight + 32 * 1, 48 * 1)
@@ -39,6 +39,7 @@ Item {
         selectedTextColor: color
         font.family: UIConstants.sansFontFamily
         font.pointSize: UIConstants.subheadFontSize
+        focus: control.focus
     }
 
     Rectangle {

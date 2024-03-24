@@ -65,6 +65,21 @@ Item {
         }
     }
 
+    Connections {
+        target: LoginViewModel
+        function onRegisterSuccess() {
+            showSuccess("注册成功", 4000)
+            stackView.pop()
+        }
+    }
+
+    Connections {
+        target: LoginViewModel
+        function onRegisterFailed(message) {
+            showError("Error: " + message, 4000)
+        }
+    }
+
     Component {
         id: auto_login
         Item {
@@ -136,6 +151,7 @@ Item {
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: text_welcome.bottom
                 anchors.topMargin: 100
+                KeyNavigation.tab: textBox_passwd
             }
             TextBox {
                 id: textBox_passwd
@@ -145,6 +161,8 @@ Item {
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: textBox_username.bottom
                 anchors.topMargin: 20
+                Keys.onEnterPressed: btn_login.clicked()
+                Keys.onReturnPressed: btn_login.clicked()
             }
             FlatButton {
                 text: "register"
@@ -170,6 +188,7 @@ Item {
                 anchors.topMargin: 50
                 enabled: textBox_username.text !== ""
                          && textBox_passwd.text !== ""
+
                 onClicked: {
                     loading = true
                     LoginViewModel.login(textBox_username.text,
@@ -219,7 +238,7 @@ Item {
             TextBox {
                 id: textBox_email
                 width: 300
-                hint: "email"
+                hint: "电子邮箱（选填）"
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: textBox_retype.bottom
                 anchors.topMargin: 20
@@ -245,6 +264,18 @@ Item {
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: textBox_email.bottom
                 anchors.topMargin: 50
+                enabled: textBox_username.text !== ""
+                         && textBox_passwd.text !== ""
+                         && textBox_retype.text !== ""
+                onClicked: {
+                    if (textBox_passwd.text !== textBox_retype.text) {
+                        showError("两次密码不一致", 4000)
+                    } else {
+                        loading = true
+                        LoginViewModel.registerUser(textBox_username.text,
+                                                    textBox_passwd.text)
+                    }
+                }
             }
         }
     }
