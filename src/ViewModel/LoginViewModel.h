@@ -5,7 +5,6 @@
 #include <QSettings>
 #include <QTimer>
 #include <QtQml/QQmlEngine>
-#include <qtmetamacros.h>
 
 class LoginViewModel : public QObject {
     Q_OBJECT
@@ -22,6 +21,9 @@ public:
     QString getUsername() const;
     void setUsername(const QString& newUsername);
 
+    bool getIsCookieExpired() const;
+    void setIsCookieExpired(bool newIsCookieExpired);
+
 signals:
     void loginSuccess();
     void loginFailed(QString message);
@@ -31,16 +33,18 @@ signals:
     void logoutFailed(QString message);
 
     void usernameChanged();
+    void isCookieExpiredChanged();
 
 public slots:
     Q_INVOKABLE void updateStatus();
 
 private:
     QTimer* timer;
-    QSettings settings;
-
     QString username;
     Q_PROPERTY(QString username READ getUsername WRITE setUsername NOTIFY usernameChanged FINAL)
+    bool isCookieExpired;
+    Q_PROPERTY(bool isCookieExpired READ getIsCookieExpired WRITE setIsCookieExpired NOTIFY
+                   isCookieExpiredChanged FINAL)
 };
 
 #endif // LOGIN_VIEW_MODEL_H

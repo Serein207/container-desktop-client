@@ -1,12 +1,11 @@
 #include "PersistentCookieJar.h"
+#include "Infrastructure/Cache/CacheManager.h"
 
 PersistentCookieJar::PersistentCookieJar(QObject* parent) : QNetworkCookieJar(parent) {
     load();
 }
 
-PersistentCookieJar::~PersistentCookieJar() {
-    save();
-}
+PersistentCookieJar::~PersistentCookieJar() {}
 
 QList<QNetworkCookie> PersistentCookieJar::cookiesForUrl(const QUrl& url) const {
     QMutexLocker lock(&mutex);
@@ -28,11 +27,10 @@ void PersistentCookieJar::save() {
         data.append(cookie.toRawForm());
         data.append(";");
     }
-    settings.setValue("Cookies", data);
+    CacheManager::getInstance()->setCookies(data);
 }
 
 void PersistentCookieJar::load() {
-    QMutexLocker lock(&mutex);
-    QByteArray data = settings.value("Cookies").toByteArray();
+    QByteArray data = CacheManager::getInstance()->getCookies().value_or("");
     setAllCookies(QNetworkCookie::parseCookies(data));
 }

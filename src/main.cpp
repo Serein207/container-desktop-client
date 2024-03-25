@@ -21,8 +21,8 @@ int main(int argc, char* argv[]) {
     QStringList fontFamilies = QFontDatabase::applicationFontFamilies(fontId);
     if (!fontFamilies.empty())
         QGuiApplication::setFont(QFont(fontFamilies[0]));
-
-    ContainerDesktop::NetworkClient::getInstance()->setCookieJar(new PersistentCookieJar);
+    auto cookieJar = new PersistentCookieJar;
+    ContainerDesktop::NetworkClient::getInstance()->setCookieJar(cookieJar);
 
     QQmlApplicationEngine engine;
     const QUrl url(QStringLiteral("qrc:/ui/window/MainWindow.qml"));
@@ -34,5 +34,9 @@ int main(int argc, char* argv[]) {
         },
         Qt::QueuedConnection);
     engine.load(url);
-    return app.exec();
+    int ret = app.exec();
+    if (!ret) {
+        cookieJar->save();
+    }
+    return ret;
 }

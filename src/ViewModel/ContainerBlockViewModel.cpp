@@ -1,11 +1,8 @@
 #include "ContainerBlockViewModel.h"
+#include "Infrastructure/Cache/CacheManager.h"
 #include "Infrastructure/Network/NetworkClient.h"
 #include "Infrastructure/Utility/Result.hpp"
 #include "Infrastructure/Utility/Tools.h"
-#include <qcontainerfwd.h>
-#include <qjsonarray.h>
-#include <qjsonobject.h>
-#include <qstringliteral.h>
 
 ContainerBlockViewModel::ContainerBlockViewModel(QObject* parent) : QAbstractListModel(parent) {}
 
@@ -59,6 +56,20 @@ void ContainerBlockViewModel::resetModel(QList<ContainerBlock> newModel) {
 }
 
 void ContainerBlockViewModel::load() {
+    auto username = CacheManager::getInstance()->getUsername();
+    auto nodeName = CacheManager::getInstance()->getNodeFromUsername(username.value_or("INVALID"));
+    if (nodeName.has_value()) {
+        ContainerDesktop::NetworkClient::getInstance()->getAllContainerInfo(
+            nodeName.value(), [this](Result<QList<ContainerBlock>> result) {
+                if (result.isErr()) {
+                    emit loadFailed(result.unwrapErr().message);
+                    return;
+                }
+                resetModel(std::move(result.unwrap()));
+                emit loadSuccess();
+            });
+        return;
+    }
     ContainerDesktop::NetworkClient::getInstance()->getClusterStatusInfo(
         [this](Result<QJsonArray> result) {
             if (result.isErr()) {
@@ -90,6 +101,8 @@ bool ContainerBlockViewModel::parseData(const QJsonObject& obj) {
     }
     if (node == "")
         return false;
+    auto username = CacheManager::getInstance()->getUsername();
+    CacheManager::getInstance()->setNodeForUsername(username.value(), node);
     ContainerDesktop::NetworkClient::getInstance()->getAllContainerInfo(
         node, [this](Result<QList<ContainerBlock>> result) {
             if (result.isErr()) {

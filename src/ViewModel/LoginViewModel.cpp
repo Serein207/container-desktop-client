@@ -1,18 +1,17 @@
 #include "LoginViewModel.h"
+#include "Infrastructure/Cache/CacheManager.h"
+#include "Infrastructure/Network/NetworkClient.h"
 #include "Infrastructure/Utility/Result.hpp"
-#include <Infrastructure/Network/NetworkClient.h>
-#include <qjsonobject.h>
 
 LoginViewModel::LoginViewModel(QObject* parent) : timer(new QTimer(this)) {
     using namespace std::chrono_literals;
-    username = settings.value("username", "").toString();
+    username = CacheManager::getInstance()->getUsername().value_or("");
+    isCookieExpired = !CacheManager::getInstance()->getCookies().has_value();
     timer->setInterval(110min);
     connect(timer, &QTimer::timeout, this, &LoginViewModel::updateStatus);
 }
 
-LoginViewModel::~LoginViewModel() {
-    settings.setValue("username", username);
-}
+LoginViewModel::~LoginViewModel() {}
 
 void LoginViewModel::login(const QString& username, const QString& password) {
     ContainerDesktop::NetworkClient::getInstance()->login(
@@ -22,7 +21,9 @@ void LoginViewModel::login(const QString& username, const QString& password) {
                 return;
             }
             auto user = result.unwrap();
-            setUsername(user.username.mid(0, user.username.length() - 4));
+            auto username = user.username.mid(0, user.username.length() - 4);
+            CacheManager::getInstance()->setUsername(username);
+            setUsername(username);
             emit loginSuccess();
         });
 }
@@ -57,8 +58,22 @@ void LoginViewModel::updateStatus() {
         [this](Result<User> result) {
             if (result.isErr()) {
                 emit loginFailed("登录已过期，请重新登录");
+                CacheManager::getInstance()->setCookies("");
+                setIsCookieExpired(true);
                 return;
             }
+            setIsCookieExpired(false);
             emit loginSuccess();
         });
+}
+
+bool LoginViewModel::getIsCookieExpired() const {
+    return isCookieExpired;
+}
+
+void LoginViewModel::setIsCookieExpired(bool newIsCookieExpired) {
+    if (isCookieExpired == newIsCookieExpired)
+        return;
+    isCookieExpired = newIsCookieExpired;
+    emit isCookieExpiredChanged();
 }

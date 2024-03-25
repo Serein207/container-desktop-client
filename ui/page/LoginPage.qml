@@ -14,7 +14,7 @@ Item {
         anchors.fill: parent
         anchors.leftMargin: control.width / 2
         Component.onCompleted: {
-            if (settings.value("username", "") !== "")
+            if (!LoginViewModel.isCookieExpired)
                 push(auto_login)
         }
     }
@@ -42,11 +42,6 @@ Item {
             fillMode: Image.PreserveAspectFit
         }
         Shadow {}
-    }
-
-    Settings {
-        id: settings
-        property string username
     }
 
     Connections {
@@ -96,7 +91,7 @@ Item {
             Text {
                 id: textBox_username
                 width: 300
-                text: settings.username
+                text: LoginViewModel.username
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: text_welcome.bottom
                 anchors.topMargin: 100
