@@ -13,6 +13,7 @@ Area {
     signal deleteClicked
     signal rebootClicked
     signal settingClicked
+    property alias checked: btn.checked
     width: 366
     height: 246
     radius: 12
@@ -30,12 +31,14 @@ Area {
         }
     }
     ToggleButton {
+        id: btn
         anchors {
             right: parent.right
             top: parent.top
             topMargin: 20
             rightMargin: 20
         }
+        
     }
     Text {
         text: name

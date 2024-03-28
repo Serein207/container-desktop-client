@@ -2,11 +2,13 @@
 #define DESERIALIZER_H
 
 #include "Infrastructure/Utility/Result.hpp"
+#include "Model/Address.h"
 #include "Model/ContainerBlock.h"
 #include "Model/User.h"
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QJsonValue>
+#include <qlist.h>
 
 #define CONTAINS_OR_NOT_NULL(field)                                                                \
     if (!obj.contains(field) || obj[field].isNull())                                               \
@@ -65,6 +67,44 @@ struct Deserializer<QList<ContainerBlock>> {
             auto result = Deserializer<ContainerBlock>::from(obj.toObject());
             if (result.isErr())
                 return Result<QList<ContainerBlock>>(
+                    ErrorInfo{ErrorKind::JsonDeserializeError, "Invalid JSON type"});
+            ret.append(result.unwrap());
+        }
+        return ret;
+    }
+};
+
+template <>
+struct Deserializer<Address> {
+    static Result<Address> from(const QJsonValue& value) {
+        if (!value.isObject()) {
+            return ErrorInfo(ErrorKind::JsonDeserializeError, "Invalid JSON type");
+        }
+        auto obj = value.toObject();
+        CONTAINS_OR_NOT_NULL("name");
+        auto name = obj["name"].toString();
+        CONTAINS_OR_NOT_NULL("inet");
+        auto ipv4 = obj["inet"].toString();
+        CONTAINS_OR_NOT_NULL("inet6");
+        auto ipv6 = obj["inet6"].toString();
+        CONTAINS_OR_NOT_NULL("hwaddr");
+        auto mac = obj["hwaddr"].toString();
+        return Address{name, ipv4, ipv6, mac};
+    }
+};
+
+template <>
+struct Deserializer<QList<Address>> {
+    static Result<QList<Address>> from(const QJsonValue& value) {
+        if (!value.isArray()) {
+            return ErrorInfo(ErrorKind::JsonDeserializeError, "Invalid JSON type");
+        }
+        auto array = value.toArray();
+        QList<Address> ret;
+        for (const auto& obj : array) {
+            auto result = Deserializer<Address>::from(obj.toObject());
+            if (result.isErr())
+                return Result<QList<Address>>(
                     ErrorInfo{ErrorKind::JsonDeserializeError, "Invalid JSON type"});
             ret.append(result.unwrap());
         }

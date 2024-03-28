@@ -17,14 +17,18 @@ else()
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/release)
 endif()
 
-find_package(Qt6 6.5 REQUIRED COMPONENTS Quick)
+find_package(Qt6 6.5 REQUIRED COMPONENTS Quick WebSockets)
 
 qt_standard_project_setup(REQUIRES 6.5)
 set(CMAKE_AUTORCC ON)
 
-file(GLOB_RECURSE SOURCE_FILES
-    ${CMAKE_SOURCE_DIR}/src/*.cpp
+file(GLOB_RECURSE SRC_FILES
+    ${CMAKE_SOURCE_DIR}/src/ViewModel/*.cpp
+    ${CMAKE_SOURCE_DIR}/src/Infrastructure/Cache/*.cpp
+    ${CMAKE_SOURCE_DIR}/src/Infrastructure/Network/*.cpp
+    ${CMAKE_SOURCE_DIR}/src/Infrastructure/Utility/*.cpp
     ${CMAKE_SOURCE_DIR}/src/*.hpp
+    ${CMAKE_SOURCE_DIR}/src/main.cpp
 )
 
 file(GLOB_RECURSE SOURCE_IMPORT_PATHS
@@ -40,7 +44,7 @@ set(VERSION_RC_PATH "")
 set(WIN32_MANIFEST_PATH "")
 
 if(WIN32)
-    set(VERSION_RC_PATH ${CMAKE_SOURCE_DIR}/SAST_Evento.rc)
+    set(VERSION_RC_PATH ${CMAKE_SOURCE_DIR}/container-desktop.rc)
     configure_file(
         ${CMAKE_SOURCE_DIR}/.cmake/version_exe.rc.in
         ${VERSION_RC_PATH}
@@ -69,10 +73,9 @@ endif()
 
 qt_add_executable(container-desktop
     ${${PROJECT_NAME}_MAC_ICON}
-    ${SOURCE_FILES}
+    ${SRC_FILES}
     ${VERSION_RC_PATH}
     ${WIN32_MANIFEST_PATH}
-    ${SOURCE_FILES}
 )
 
 qt_add_qml_module(container-desktop
@@ -102,6 +105,7 @@ set_target_properties(container-desktop PROPERTIES
 
 target_link_libraries(container-desktop
     PRIVATE Qt6::Quick
+    Qt6::WebSockets
 )
 
 include(GNUInstallDirs)

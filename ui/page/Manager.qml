@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import container_desktop
 import "../item"
 import "../component"
+import "../window"
 
 ScrollablePage {
     GridView {
@@ -24,7 +25,13 @@ ScrollablePage {
             memory: model.mem
             status: model.status
             remark: model.remark
+            onCheckedChanged: {
+                if (checked) {
+                    ContainerViewModel.load(vmId)
+                }
+            }
         }
+        
     }
 
     Component.onCompleted: {
@@ -44,6 +51,17 @@ ScrollablePage {
         function onLoadFailed(message) {
             showError("Error: " + message, 4000)
             showErrorView()
+        }
+    }
+
+
+    Loader {
+        id: loader
+    }
+
+    Connections {
+        target: ContainerViewModel
+        function onLoadSuccess() {
         }
     }
 

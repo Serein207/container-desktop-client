@@ -2,14 +2,15 @@
 #include "Api2.hpp"
 #include "Infrastructure/Deserializer/Deserializer.hpp"
 #include "Infrastructure/Utility/Result.hpp"
+#include "Model/Address.h"
 #include "Model/ContainerBlock.h"
+#include "TcpSockify.h"
 #include <QNetworkProxy>
 #include <functional>
-#include <qjsonarray.h>
 
-static auto API_GATEWAY = QStringLiteral("https://container-desk.top");
+static auto API_GATEWAY = QStringLiteral("https://cd.glucy2.cn");
 
-ContainerDesktop::NetworkClient::NetworkClient() {
+ContainerDesktop::NetworkClient::NetworkClient() : tcpSockify(new TcpSockify(this)) {
     // manager.setProxy(QNetworkProxy::NoProxy);
 }
 
@@ -98,4 +99,20 @@ void ContainerDesktop::NetworkClient::getAllContainerInfo(
                   [callback = std::move(callback)](Result<QJsonArray> result) {
                       callback(result.andThen(Deserializer<QList<ContainerBlock>>::from));
                   });
+}
+
+void ContainerDesktop::NetworkClient::getContainerIpAddress(
+    const QString& node, const QString& vmId,
+    std::function<void(Result<QList<Address>>)> callback) {
+    auto url = QUrl("/api2/json/nodes/" + node + "/lxc/" + vmId + "/interfaces");
+    auto data = QJsonDocument();
+    request<Api2>(Method::GET, url, data,
+                  [callback = std::move(callback)](Result<QJsonArray> result) {
+                      callback(result.andThen(Deserializer<QList<Address>>::from));
+                  });
+}
+
+void ContainerDesktop::NetworkClient::connectVnc(const QString& ip, quint16 port) {
+    tcpSockify->connectToServer(
+        QStringLiteral("wss://cd.glucy2.cn/vnc/%1/%2/connect").arg(ip).arg(port));
 }

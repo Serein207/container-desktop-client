@@ -2,6 +2,7 @@
 #define NETWORKCLIENT_H
 
 #include "Infrastructure/Utility/Result.hpp"
+#include "Model/Address.h"
 #include "Model/ContainerBlock.h"
 #include "Model/User.h"
 #include <QJsonArray>
@@ -12,10 +13,9 @@
 #include <QStringView>
 #include <QThread>
 #include <QUrl>
-#include <qjsonarray.h>
-#include <qjsonobject.h>
-#include <type_traits>
+#include <functional>
 
+class TcpSockify;
 namespace ContainerDesktop {
 inline namespace ContainerDesktopDetails {
 constexpr int SUCCESS_CODES[] = {0, 1};
@@ -119,11 +119,15 @@ public:
     void getClusterStatusInfo(std::function<void(Result<QJsonArray>)> callback);
     void getAllContainerInfo(const QString& node,
                              std::function<void(Result<QList<ContainerBlock>>)> callback);
+    void getContainerIpAddress(const QString& node, const QString& vmId,
+                               std::function<void(Result<QList<Address>>)> callback);
+    void connectVnc(const QString& ip, quint16 port);
 
 private:
     QNetworkAccessManager manager;
     QByteArray tokenBytes;
     QByteArray ticket;
+    TcpSockify* tcpSockify;
     QNetworkReply* createReply(ContainerDesktop::Method verb, const QNetworkRequest& requestInfo,
                                const QByteArray& body);
 };

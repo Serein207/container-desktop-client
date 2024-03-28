@@ -9,7 +9,6 @@ static auto filepath = QStandardPaths::writableLocation(QStandardPaths::CacheLoc
                        QStringLiteral("/GaoDiZhengGeGuo/Container Desktop/cache.dat");
 
 CacheManager::CacheManager() {
-    qDebug() << filepath;
     if (!loadCacheFromFile(filepath)) {
         cache = QMap<QString, QString>();
     }
