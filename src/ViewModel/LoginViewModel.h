@@ -16,7 +16,8 @@ public:
     ~LoginViewModel();
 
     Q_INVOKABLE void login(const QString& username, const QString& password);
-    Q_INVOKABLE void registerUser(const QString& username, const QString& password);
+    Q_INVOKABLE void registerUser(const QString& username, const QString& password,
+                                  const QString& email);
 
     QString getUsername() const;
     void setUsername(const QString& newUsername);

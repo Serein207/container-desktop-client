@@ -4,7 +4,6 @@
 TcpSockify::TcpSockify(QObject* parent) : QObject(parent) {
     tcpServer = new QTcpServer(this);
     webSocket = new QWebSocket(QString(), QWebSocketProtocol::VersionLatest, this);
-    connect(webSocket, &QWebSocket::connected, this, &TcpSockify::onWebSocketConnected);
     connect(webSocket, &QWebSocket::binaryMessageReceived, this,
             &TcpSockify::onWebSocketReceivedBinaryData);
     connect(webSocket, &QWebSocket::textMessageReceived, this,

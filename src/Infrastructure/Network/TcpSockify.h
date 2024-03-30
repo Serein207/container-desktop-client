@@ -17,7 +17,6 @@ public:
     void disconnectFromServer();
 
 private slots:
-    void onWebSocketConnected();
     void onWebSocketReceivedBinaryData(const QByteArray& data);
     void onWebSocketReceivedTextData(const QString& data);
 

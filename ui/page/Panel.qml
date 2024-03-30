@@ -144,6 +144,9 @@ ScrollablePage {
                 topMargin: 15
                 bottom: parent.bottom
             }
+            // cpu & iowait
+            // netin & netout
+            // memory
             chartType: 'line'
             chartData: {
                 return {

@@ -268,7 +268,7 @@ Item {
                     } else {
                         loading = true
                         LoginViewModel.registerUser(textBox_username.text,
-                                                    textBox_passwd.text)
+                                                    textBox_passwd.text, textBox_email.text)
                     }
                 }
             }

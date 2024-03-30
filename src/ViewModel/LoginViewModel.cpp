@@ -2,6 +2,7 @@
 #include "Infrastructure/Cache/CacheManager.h"
 #include "Infrastructure/Network/NetworkClient.h"
 #include "Infrastructure/Utility/Result.hpp"
+#include <optional>
 
 LoginViewModel::LoginViewModel(QObject* parent) : timer(new QTimer(this)) {
     using namespace std::chrono_literals;
@@ -28,9 +29,11 @@ void LoginViewModel::login(const QString& username, const QString& password) {
         });
 }
 
-void LoginViewModel::registerUser(const QString& username, const QString& password) {
+void LoginViewModel::registerUser(const QString& username, const QString& password,
+                                  const QString& email) {
+    auto emailValue = (email.isEmpty() ? std::nullopt : std::make_optional<QString>(email));
     ContainerDesktop::NetworkClient::getInstance()->registerUser(
-        username, password, [this](Result<QJsonObject> result) {
+        username, password, emailValue, [this](Result<QJsonObject> result) {
             if (result.isErr()) {
                 emit loginFailed(result.unwrapErr().message);
                 return;

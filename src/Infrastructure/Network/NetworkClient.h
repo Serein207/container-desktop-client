@@ -111,17 +111,35 @@ public:
         return ticket;
     }
 
+    // user
     void setCookieJar(QNetworkCookieJar* cookieJar);
     void login(const QString& username, const QString& password,
                std::function<void(Result<User>)> callback);
     void registerUser(const QString& username, const QString& password,
+                      const std::optional<QString>& email,
                       std::function<void(Result<QJsonObject>)> callback);
+    void modifyPassword(const QString& username, const QString& password,
+                        std::function<void(Result<QJsonObject>)> callback);
+
+    // container
     void getClusterStatusInfo(std::function<void(Result<QJsonArray>)> callback);
     void getAllContainerInfo(const QString& node,
                              std::function<void(Result<QList<ContainerBlock>>)> callback);
     void getContainerIpAddress(const QString& node, const QString& vmId,
                                std::function<void(Result<QList<Address>>)> callback);
     void connectVnc(const QString& ip, quint16 port);
+    void startContainer(const QString& node, const QString& vmId,
+                        std::function<void(Result<QJsonObject>)> callback);
+    void rebootContainer(const QString& node, const QString& vmId,
+                         std::function<void(Result<QJsonObject>)> callback);
+    void shutdownContainer(const QString& node, const QString& vmId,
+                           std::function<void(Result<QJsonObject>)> callback);
+    void stopContainer(const QString& node, const QString& vmId,
+                       std::function<void(Result<QJsonObject>)> callback);
+    void suspendContainer(const QString& node, const QString& vmId,
+                          std::function<void(Result<QJsonObject>)> callback);
+    void resumeContainer(const QString& node, const QString& vmId,
+                         std::function<void(Result<QJsonObject>)> callback);
 
 private:
     QNetworkAccessManager manager;
