@@ -10,10 +10,9 @@ Area {
     property string status
     property string memory
     property string remark
-    signal deleteClicked
-    signal rebootClicked
-    signal settingClicked
-    property alias checked: btn.checked
+    signal shutdownClicked
+    signal startClicked
+    signal moreClicked
     width: 366
     height: 246
     radius: 12
@@ -29,16 +28,6 @@ Area {
             leftMargin: 20
             topMargin: 20
         }
-    }
-    ToggleButton {
-        id: btn
-        anchors {
-            right: parent.right
-            top: parent.top
-            topMargin: 20
-            rightMargin: 20
-        }
-        
     }
     Text {
         text: name
@@ -80,36 +69,36 @@ Area {
         }
         spacing: 25
         FlatButton {
-            text: "删除"
+            text: "关闭"
             textColor: "#FF5733"
             hasBorder: true
             borderColor: textColor
             radius: 8
             height: 48
             onClicked: {
-                control.deleteClicked()
+                control.shutdownClicked()
             }
         }
         FlatButton {
-            text: "重启"
+            text: "启动"
             textColor: "#00BAAD"
             hasBorder: true
             borderColor: textColor
             radius: 8
             height: 48
             onClicked: {
-                control.rebootClicked()
+                control.startClicked()
             }
         }
         FlatButton {
-            text: "设置"
+            text: "更多"
             textColor: "#808080"
             hasBorder: true
             borderColor: textColor
             radius: 8
             height: 48
             onClicked: {
-                control.settingClicked()
+                control.moreClicked()
             }
         }
     }

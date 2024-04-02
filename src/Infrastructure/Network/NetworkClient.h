@@ -2,7 +2,6 @@
 #define NETWORKCLIENT_H
 
 #include "Infrastructure/Utility/Result.hpp"
-#include "Model/Address.h"
 #include "Model/ContainerBlock.h"
 #include "Model/User.h"
 #include <QJsonArray>
@@ -14,6 +13,7 @@
 #include <QThread>
 #include <QUrl>
 #include <functional>
+#include <qlogging.h>
 
 class TcpSockify;
 namespace ContainerDesktop {
@@ -52,7 +52,7 @@ public:
         connect(reply, &QNetworkReply::finished, [=] {
             auto content = reply->readAll();
             auto networkError = reply->error();
-
+            qDebug() << "Network error: " << networkError;
             qDebug() << content.toStdString().c_str();
 
             if (networkError != QNetworkReply::NoError) {
@@ -125,9 +125,8 @@ public:
     void getClusterStatusInfo(std::function<void(Result<QJsonArray>)> callback);
     void getAllContainerInfo(const QString& node,
                              std::function<void(Result<QList<ContainerBlock>>)> callback);
-    void getContainerIpAddress(const QString& node, const QString& vmId,
-                               std::function<void(Result<QList<Address>>)> callback);
     void connectVnc(const QString& ip, quint16 port);
+    void disconnectVnc();
     void startContainer(const QString& node, const QString& vmId,
                         std::function<void(Result<QJsonObject>)> callback);
     void rebootContainer(const QString& node, const QString& vmId,

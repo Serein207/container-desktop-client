@@ -18,6 +18,10 @@ InfoBar 1.0 InfoBar.qml
 ProgressRing 1.0 ProgressRing.qml
 Chart 1.0 Chart.qml
 Shadow 1.0 Shadow.qml
+Pivot 1.0 Pivot.qml
+PivotItem 1.0 PivotItem.qml
+ContentDialog 1.0 ContentDialog.qml
+MaterialPopup 1.0 MaterialPopup.qml
 MaterialObject 1.0 MaterialObject.qml
 singleton UIConstants 1.0 UIConstants.qml
 singleton StatusViewType 1.0 StatusViewType.qml

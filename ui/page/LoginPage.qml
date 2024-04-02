@@ -183,7 +183,6 @@ Item {
                 anchors.topMargin: 50
                 enabled: textBox_username.text !== ""
                          && textBox_passwd.text !== ""
-
                 onClicked: {
                     loading = true
                     LoginViewModel.login(textBox_username.text,
@@ -268,7 +267,8 @@ Item {
                     } else {
                         loading = true
                         LoginViewModel.registerUser(textBox_username.text,
-                                                    textBox_passwd.text, textBox_email.text)
+                                                    textBox_passwd.text,
+                                                    textBox_email.text)
                     }
                 }
             }

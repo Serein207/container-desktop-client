@@ -31,5 +31,12 @@
         <file>ui/component/InfoBar.qml</file>
         <file>ui/component/MaterialObject.qml</file>
         <file>ui/component/ProgressRing.qml</file>
+        <file>ui/component/MaterialPopup.qml</file>
+        <file>ui/component/ContentDialog.qml</file>
+        <file>ui/component/Pivot.qml</file>
+        <file>ui/component/PivotItem.qml</file>
+        <file>ui/item/Snapshot.qml</file>
+        <file>ui/item/ContainerSettings.qml</file>
+        <file>ui/item/RemoteDesktop.qml</file>
     </qresource>
 </RCC>

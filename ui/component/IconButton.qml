@@ -2,7 +2,6 @@ import QtQuick 2.15
 import QtQuick.Controls
 import QtQuick.Layouts
 import Qt5Compat.GraphicalEffects
-import FluentUI
 
 Item {
     id: control
@@ -24,7 +23,7 @@ Item {
     property alias background: btn.background
     property int display: Button.IconOnly
     property alias text: btn.text
-
+    property alias border: bgd.border
     Button {
         id: btn
         property color normalColor: "transparent"
@@ -33,6 +32,7 @@ Item {
         anchors.centerIn: parent
         display: control.display
         background: Rectangle {
+            id: bgd
             implicitWidth: 30
             implicitHeight: 30
             radius: control.radius

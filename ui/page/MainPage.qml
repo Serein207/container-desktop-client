@@ -10,7 +10,6 @@ Item {
         id: swipeView
         currentIndex: navigation.currentIndex
         anchors.fill: parent
-
         Manager {}
         Panel {}
         Personal {}

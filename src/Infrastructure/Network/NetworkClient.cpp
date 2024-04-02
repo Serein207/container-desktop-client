@@ -2,7 +2,6 @@
 #include "Api2.hpp"
 #include "Infrastructure/Deserializer/Deserializer.hpp"
 #include "Infrastructure/Utility/Result.hpp"
-#include "Model/Address.h"
 #include "Model/ContainerBlock.h"
 #include "TcpSockify.h"
 #include <QNetworkProxy>
@@ -12,7 +11,7 @@
 #include <qjsonobject.h>
 #include <utility>
 
-static auto API_GATEWAY = QStringLiteral("https://cd.glucy2.cn");
+static auto API_GATEWAY = QStringLiteral("http://192.168.0.195");
 
 ContainerDesktop::NetworkClient::NetworkClient() : tcpSockify(new TcpSockify(this)) {
     // manager.setProxy(QNetworkProxy::NoProxy);
@@ -100,7 +99,7 @@ void ContainerDesktop::NetworkClient::modifyPassword(
 
 void ContainerDesktop::NetworkClient::getClusterStatusInfo(
     std::function<void(Result<QJsonArray>)> callback) {
-    auto url = QUrl(API_GATEWAY + "/api2/json/cluster/status");
+    auto url = QUrl(API_GATEWAY + "/api2/json/cluster/resources");
     auto data = QJsonDocument();
     request<Api2>(
         Method::GET, url, data,
@@ -117,25 +116,18 @@ void ContainerDesktop::NetworkClient::getAllContainerInfo(
                   });
 }
 
-void ContainerDesktop::NetworkClient::getContainerIpAddress(
-    const QString& node, const QString& vmId,
-    std::function<void(Result<QList<Address>>)> callback) {
-    auto url = QUrl("/api2/json/nodes/" + node + "/lxc/" + vmId + "/interfaces");
-    auto data = QJsonDocument();
-    request<Api2>(Method::GET, url, data,
-                  [callback = std::move(callback)](Result<QJsonArray> result) {
-                      callback(result.andThen(Deserializer<QList<Address>>::from));
-                  });
-}
-
 void ContainerDesktop::NetworkClient::connectVnc(const QString& ip, quint16 port) {
     tcpSockify->connectToServer(
-        QStringLiteral("wss://cd.glucy2.cn/vnc/%1/%2/connect").arg(ip).arg(port));
+        QStringLiteral("ws://192.168.0.195/vnc/%1/%2/connect").arg(ip).arg(port));
+}
+
+void ContainerDesktop::NetworkClient::disconnectVnc() {
+    tcpSockify->disconnectFromServer();
 }
 
 void ContainerDesktop::NetworkClient::startContainer(
     const QString& node, const QString& vmId, std::function<void(Result<QJsonObject>)> callback) {
-    auto url = QUrl(API_GATEWAY + "api2/json/nodes/" + node + "/lxc/" + vmId + "/status/start");
+    auto url = QUrl(API_GATEWAY + "/api2/json/nodes/" + node + "/lxc/" + vmId + "/status/start");
     auto data = QJsonDocument();
     request<Api2>(
         Method::POST, url, data,
@@ -144,7 +136,7 @@ void ContainerDesktop::NetworkClient::startContainer(
 
 void ContainerDesktop::NetworkClient::rebootContainer(
     const QString& node, const QString& vmId, std::function<void(Result<QJsonObject>)> callback) {
-    auto url = QUrl(API_GATEWAY + "api2/json/nodes/" + node + "/lxc/" + vmId + "/status/reboot");
+    auto url = QUrl(API_GATEWAY + "/api2/json/nodes/" + node + "/lxc/" + vmId + "/status/reboot");
     auto data = QJsonDocument();
     request<Api2>(
         Method::POST, url, data,
@@ -153,7 +145,7 @@ void ContainerDesktop::NetworkClient::rebootContainer(
 
 void ContainerDesktop::NetworkClient::shutdownContainer(
     const QString& node, const QString& vmId, std::function<void(Result<QJsonObject>)> callback) {
-    auto url = QUrl(API_GATEWAY + "api2/json/nodes/" + node + "/lxc/" + vmId + "/status/shutdown");
+    auto url = QUrl(API_GATEWAY + "/api2/json/nodes/" + node + "/lxc/" + vmId + "/status/shutdown");
     auto data = QJsonDocument();
     request<Api2>(
         Method::POST, url, data,
@@ -162,7 +154,7 @@ void ContainerDesktop::NetworkClient::shutdownContainer(
 
 void ContainerDesktop::NetworkClient::stopContainer(
     const QString& node, const QString& vmId, std::function<void(Result<QJsonObject>)> callback) {
-    auto url = QUrl(API_GATEWAY + "api2/json/nodes/" + node + "/lxc/" + vmId + "/status/stop");
+    auto url = QUrl(API_GATEWAY + "/api2/json/nodes/" + node + "/lxc/" + vmId + "/status/stop");
     auto data = QJsonDocument();
     request<Api2>(
         Method::POST, url, data,
@@ -171,7 +163,7 @@ void ContainerDesktop::NetworkClient::stopContainer(
 
 void ContainerDesktop::NetworkClient::suspendContainer(
     const QString& node, const QString& vmId, std::function<void(Result<QJsonObject>)> callback) {
-    auto url = QUrl(API_GATEWAY + "api2/json/nodes/" + node + "/lxc/" + vmId + "/status/suspend");
+    auto url = QUrl(API_GATEWAY + "/api2/json/nodes/" + node + "/lxc/" + vmId + "/status/suspend");
     auto data = QJsonDocument();
     request<Api2>(
         Method::POST, url, data,
@@ -180,7 +172,7 @@ void ContainerDesktop::NetworkClient::suspendContainer(
 
 void ContainerDesktop::NetworkClient::resumeContainer(
     const QString& node, const QString& vmId, std::function<void(Result<QJsonObject>)> callback) {
-    auto url = QUrl(API_GATEWAY + "api2/json/nodes/" + node + "/lxc/" + vmId + "/status/resume");
+    auto url = QUrl(API_GATEWAY + "/api2/json/nodes/" + node + "/lxc/" + vmId + "/status/resume");
     auto data = QJsonDocument();
     request<Api2>(
         Method::POST, url, data,

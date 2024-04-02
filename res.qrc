@@ -13,5 +13,6 @@
         <file>res/img/search.svg</file>
         <file>res/img/download.png</file>
         <file>res/img/kylinOS.png</file>
+        <file>res/img/plus.svg</file>
     </qresource>
 </RCC>

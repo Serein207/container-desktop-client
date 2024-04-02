@@ -6,6 +6,7 @@ import "../component"
 import "../window"
 
 ScrollablePage {
+    id: page
     GridView {
         id: grid_view
         interactive: false
@@ -25,13 +26,47 @@ ScrollablePage {
             memory: model.mem
             status: model.status
             remark: model.remark
-            onCheckedChanged: {
-                if (checked) {
-                    ContainerViewModel.load(vmId)
-                }
+            onStartClicked: {
+                ContainerViewModel.load(vmId)
+            }
+            onShutdownClicked: {
+                ContainerViewModel.close(vmId)
+            }
+            onMoreClicked: {
+                dialog.open()
             }
         }
-        
+    }
+
+    ContentDialog {
+        id: dialog
+        title: "More"
+        height: pivot.height + 60
+        width: 1000
+        x: (page.width - dialog.width) / 2 - 65
+        Pivot {
+            id: pivot
+            anchors {
+                fill: parent
+                topMargin: 60
+                margins: 30
+            }
+            currentIndex: 0
+            PivotItem {
+                title: "快照管理"
+                contentItem: Snapshot {
+                    anchors.fill: parent
+                }
+            }
+            PivotItem {
+                title: "容器设置"
+                contentItem: ContainerSettings {}
+            }
+            PivotItem {
+                title: "远程桌面连接设置"
+                contentItem: RemoteDesktop {}
+            }
+        }
     }
 
     Component.onCompleted: {
@@ -54,15 +89,9 @@ ScrollablePage {
         }
     }
 
-
-    Loader {
-        id: loader
-    }
-
     Connections {
         target: ContainerViewModel
-        function onLoadSuccess() {
-        }
+        function onLoadSuccess() {}
     }
 
     onErrorClicked: {

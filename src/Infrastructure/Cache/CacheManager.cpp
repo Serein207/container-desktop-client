@@ -52,6 +52,13 @@ std::optional<QString> CacheManager::getNodeFromUsername(const QString& username
     return cache[username];
 }
 
+std::optional<QString> CacheManager::getNodeForCurrentUser() {
+    std::shared_lock<std::shared_mutex> lock(mtx);
+    if (!cache.contains("username"))
+        return std::nullopt;
+    return getNodeFromUsername(cache["username"]);
+}
+
 void CacheManager::setUsername(const QString& username) {
     std::lock_guard<std::shared_mutex> lock(mtx);
     cache["username"] = username;

@@ -4,6 +4,7 @@
 #include <QAbstractListModel>
 #include <QList>
 #include <QtQml/QQmlEngine>
+#include <qtmetamacros.h>
 
 class ContainerViewModel : public QObject {
     Q_OBJECT
@@ -13,14 +14,18 @@ class ContainerViewModel : public QObject {
 public:
     explicit ContainerViewModel(QObject* parent = nullptr);
 
-    Q_INVOKABLE void load(const QString& vmId);
+    Q_INVOKABLE void start(const QString& vmId);
+    Q_INVOKABLE void close(const QString& vmId);
+    Q_INVOKABLE void connectVnc(const QString& vmId);
 
 signals:
     void loadSuccess();
     void loadFailed(QString message);
 
 private:
-    void connectVnc(const QString& ip, unsigned short port);
+    enum class Status { Stopped, Running };
+
+    QHash<int, Status> containerStatus;
 };
 
 #endif // CONTAINER_VIEW_MODEL_H

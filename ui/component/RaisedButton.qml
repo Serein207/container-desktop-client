@@ -13,6 +13,7 @@ Item {
     property alias rippleColor: ripple.color
     property bool loading: false
     property bool enabled: !loading
+    property alias font: label.font
 
     signal clicked
 

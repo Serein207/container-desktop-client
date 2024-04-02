@@ -13,6 +13,8 @@ public:
     void setNodeForUsername(const QString& username, const QString& node);
     std::optional<QString> getNodeFromUsername(const QString& username);
 
+    std::optional<QString> getNodeForCurrentUser();
+
     void setUsername(const QString& username);
     std::optional<QString> getUsername();
 

@@ -94,12 +94,12 @@ bool ContainerBlockViewModel::parseData(const QJsonObject& obj) {
     QString node = "";
     if (obj.contains("type") && !obj["type"].isNull()) {
         if (obj["type"].toString() == QStringLiteral("node")) {
-            if (obj.contains("name") && !obj["name"].isNull()) {
-                node = obj["name"].toString();
+            if (obj.contains("node") && !obj["node"].isNull()) {
+                node = obj["node"].toString();
             }
         }
     }
-    if (node == "")
+    if (node.isEmpty())
         return false;
     auto username = CacheManager::getInstance()->getUsername();
     CacheManager::getInstance()->setNodeForUsername(username.value(), node);
