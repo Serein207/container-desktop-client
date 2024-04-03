@@ -19,6 +19,7 @@ ScrollablePage {
         cellHeight: 260
         cellWidth: 380
         delegate: ContainerCard {
+            id: card
             name: model.name
             source: "qrc:/res/img/kylinOS.png"
             info: model.vmId
@@ -33,6 +34,7 @@ ScrollablePage {
                 ContainerViewModel.close(vmId)
             }
             onMoreClicked: {
+                dialog.vmId = model.vmId
                 dialog.open()
             }
         }
@@ -44,6 +46,7 @@ ScrollablePage {
         height: pivot.height + 60
         width: 1000
         x: (page.width - dialog.width) / 2 - 65
+        property string vmId
         Pivot {
             id: pivot
             anchors {
@@ -55,6 +58,7 @@ ScrollablePage {
             PivotItem {
                 title: "快照管理"
                 contentItem: Snapshot {
+                    vmId: dialog.vmId
                     anchors.fill: parent
                 }
             }
@@ -64,7 +68,9 @@ ScrollablePage {
             }
             PivotItem {
                 title: "远程桌面连接设置"
-                contentItem: RemoteDesktop {}
+                contentItem: RemoteDesktop {
+                    vmId: dialog.vmId
+                }
             }
         }
     }

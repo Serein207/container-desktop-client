@@ -15,6 +15,7 @@ Item {
     property bool hasBorder: false
     property color borderColor: Qt.rgba(226 / 255, 229 / 255, 234 / 255, 1)
     property alias radius: background.radius
+    property alias font: label.font
 
     signal clicked
 

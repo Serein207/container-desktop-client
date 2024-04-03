@@ -4,7 +4,6 @@
 #include <QAbstractListModel>
 #include <QList>
 #include <QtQml/QQmlEngine>
-#include <qtmetamacros.h>
 
 class ContainerViewModel : public QObject {
     Q_OBJECT

@@ -6,6 +6,7 @@ import "../component"
 
 Item {
     id: control
+    property string vmId
     Item {
         width: parent.width
         height: 50

@@ -13,7 +13,6 @@
 #include <QThread>
 #include <QUrl>
 #include <functional>
-#include <qlogging.h>
 
 class TcpSockify;
 namespace ContainerDesktop {

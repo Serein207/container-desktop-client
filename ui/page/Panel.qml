@@ -5,7 +5,7 @@ import "../component"
 ScrollablePage {
     Area {
         Layout.fillWidth: true
-        height: 320
+        height: 220
         paddings: 20
         Text {
             id: text_title
@@ -27,7 +27,6 @@ ScrollablePage {
         }
 
         Rectangle {
-            id: rec
             height: 93
             color: "#f3f3f3"
             radius: 8
@@ -103,13 +102,20 @@ ScrollablePage {
                 }
             }
         }
+    }
+
+    Area {
+        Layout.fillWidth: true
+        Layout.topMargin: 20
+        height: 320
+        paddings: 20
         Text {
             id: text1
             text: "内存使用率"
             font.pointSize: 14
             color: "#718096"
             anchors {
-                top: rec.bottom
+                top: parent.top
                 topMargin: 20
                 left: parent.left
             }
@@ -140,7 +146,7 @@ ScrollablePage {
                 left: text1.right
                 leftMargin: 20
                 right: parent.right
-                top: rec.bottom
+                top: text1.top
                 topMargin: 15
                 bottom: parent.bottom
             }

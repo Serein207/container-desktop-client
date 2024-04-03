@@ -7,8 +7,6 @@
 #include <QNetworkProxy>
 #include <functional>
 #include <optional>
-#include <qjsondocument.h>
-#include <qjsonobject.h>
 #include <utility>
 
 static auto API_GATEWAY = QStringLiteral("http://192.168.0.195");
