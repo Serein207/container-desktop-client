@@ -6,10 +6,10 @@ Item {
     id: control
     default property alias content: container.data
     property int statusMode: StatusViewType.loading
-    property string loadingText: "Loading..."
-    property string emptyText: "Nothing"
-    property string errorText: "oops, something went wrong!"
-    property string errorButtonText: "Reload"
+    property string loadingText: "加载中..."
+    property string emptyText: "空空如也"
+    property string errorText: "出错啦"
+    property string errorButtonText: "重新加载"
     property color activeColor: "#335eea"
     property color color: Window.active ? Qt.rgba(
                                               38 / 255, 44 / 255, 54 / 255,

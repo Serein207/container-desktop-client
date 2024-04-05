@@ -15,7 +15,7 @@ TextField {
     leftPadding: padding + 28
     rightPadding: 20
     enabled: !disabled
-    placeholderText: "Search"
+    placeholderText: "搜索"
     font.pixelSize: 16
     color: activeFocus ? "#335eea" : "#767676"
     selectedTextColor: control.color

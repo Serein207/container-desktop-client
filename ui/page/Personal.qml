@@ -13,7 +13,7 @@ ScrollablePage {
             height: 500
             paddings: 30
             Text {
-                text: "Modify Profile"
+                text: "更改信息"
                 font.pointSize: 18
             }
             Column {
@@ -22,19 +22,19 @@ ScrollablePage {
                 TextBox {
                     id: textBox_firstName
                     width: 300
-                    hint: "first name"
+                    hint: "姓"
                     text: ProfileViewModel.firstName
                 }
                 TextBox {
                     id: textBox_lastName
                     width: 300
-                    hint: "last name"
+                    hint: "名"
                     text: ProfileViewModel.lastName
                 }
                 TextBox {
                     id: textBox_email
                     width: 300
-                    hint: "email"
+                    hint: "邮箱"
                     text: ProfileViewModel.email
                 }
             }
@@ -46,7 +46,7 @@ ScrollablePage {
                     bottom: parent.bottom
                     bottomMargin: 20
                 }
-                text: "ok"
+                text: "确定"
                 color: "#2196f3"
                 textColor: "#fff"
                 rippleColor: "#fff"
@@ -66,7 +66,7 @@ ScrollablePage {
             height: 500
             paddings: 30
             Text {
-                text: "Modify Password"
+                text: "更改密码"
                 font.pointSize: 18
             }
             Column {
@@ -74,19 +74,19 @@ ScrollablePage {
                 spacing: 20
                 TextBox {
                     width: 300
-                    hint: "old password"
+                    hint: "旧密码"
                     echoMode: TextField.Password
                 }
                 TextBox {
                     id: textBox_passwd
                     width: 300
-                    hint: "new password"
+                    hint: "新密码"
                     echoMode: TextField.Password
                 }
                 TextBox {
                     id: textBox_passwdRetype
                     width: 300
-                    hint: "confirm password"
+                    hint: "确认新密码"
                     echoMode: TextField.Password
                 }
             }
@@ -98,7 +98,7 @@ ScrollablePage {
                     bottom: parent.bottom
                     bottomMargin: 20
                 }
-                text: "ok"
+                text: "确定"
                 color: "#2196f3"
                 textColor: "#fff"
                 rippleColor: "#fff"

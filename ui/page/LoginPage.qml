@@ -27,7 +27,7 @@ Item {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: parent.top
             anchors.topMargin: parent.height / 4
-            text: "Text Text Text Text"
+            text: "Hi! 你好！\n欢迎使用国产桌面管理系统"
             color: "#fff"
             font.bold: true
             font.pointSize: 28
@@ -82,7 +82,7 @@ Item {
             height: control.height
             Text {
                 id: text_welcome
-                text: "Welcome back!"
+                text: "欢迎回来！"
                 font.pointSize: 24
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: parent.top
@@ -111,7 +111,7 @@ Item {
             RaisedButton {
                 id: btn_login
                 width: 300
-                text: "login"
+                text: "登录"
                 color: "#2196f3"
                 textColor: "#fff"
                 rippleColor: "#fff"
@@ -133,7 +133,7 @@ Item {
             height: control.height
             Text {
                 id: text_welcome
-                text: "Welcome back!"
+                text: "欢迎回来！"
                 font.pointSize: 24
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: parent.top
@@ -142,7 +142,8 @@ Item {
             TextBox {
                 id: textBox_username
                 width: 300
-                hint: "username"
+                hint: "用户名"
+                text: LoginViewModel.username
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: text_welcome.bottom
                 anchors.topMargin: 100
@@ -151,7 +152,7 @@ Item {
             TextBox {
                 id: textBox_passwd
                 width: 300
-                hint: "password"
+                hint: "密码"
                 echoMode: TextField.Password
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: textBox_username.bottom
@@ -160,7 +161,7 @@ Item {
                 Keys.onReturnPressed: btn_login.clicked()
             }
             FlatButton {
-                text: "register"
+                text: "注册"
                 textColor: "#8a999999"
                 fontSize: 8
                 height: 15
@@ -174,7 +175,7 @@ Item {
             RaisedButton {
                 id: btn_login
                 width: 300
-                text: "login"
+                text: "登录"
                 color: "#2196f3"
                 textColor: "#fff"
                 rippleColor: "#fff"
@@ -206,7 +207,7 @@ Item {
             TextBox {
                 id: textBox_username
                 width: 300
-                hint: "username"
+                hint: "用户名"
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: parent.top
                 anchors.topMargin: control.height / 5
@@ -214,7 +215,7 @@ Item {
             TextBox {
                 id: textBox_passwd
                 width: 300
-                hint: "password"
+                hint: "密码"
                 echoMode: TextField.Password
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: textBox_username.bottom
@@ -223,7 +224,7 @@ Item {
             TextBox {
                 id: textBox_retype
                 width: 300
-                hint: "retype password"
+                hint: "确认密码"
                 echoMode: TextField.Password
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: textBox_passwd.bottom
@@ -238,7 +239,7 @@ Item {
                 anchors.topMargin: 20
             }
             FlatButton {
-                text: "return"
+                text: "返回"
                 textColor: "#8a999999"
                 fontSize: 8
                 height: 15
@@ -251,7 +252,7 @@ Item {
             }
             RaisedButton {
                 width: 300
-                text: "register"
+                text: "注册"
                 color: "#2196f3"
                 textColor: "#fff"
                 rippleColor: "#fff"
