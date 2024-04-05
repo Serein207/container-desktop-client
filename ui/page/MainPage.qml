@@ -70,6 +70,200 @@ Item {
         }
     }
 
+    ContentDialog {
+        id: dialog
+        title: "创建容器"
+        width: 1000
+        height: 540
+        x: (parent.width - dialog.width) / 2
+        y: 70
+        Item {
+            anchors {
+                top: parent.top
+                topMargin: 55
+                horizontalCenter: parent.horizontalCenter
+                bottom: parent.bottom
+                bottomMargin: 20
+            }
+            width: 780
+            GridView {
+                model: VzTemplateViewModel
+                cellHeight: 390
+                cellWidth: 260
+                topMargin: 10
+                clip: true
+                implicitHeight: contentHeight
+                anchors.fill: parent
+                delegate: Area {
+                    width: 240
+                    height: 240 + text.implicitHeight
+                    Image {
+                        id: img
+                        source: "qrc:/res/img/kylinOS.png"
+                        width: 150
+                        height: 150
+                        anchors {
+                            top: parent.top
+                            topMargin: 10
+                            horizontalCenter: parent.horizontalCenter
+                        }
+                    }
+                    Text {
+                        id: text
+                        text: model.description
+                        anchors {
+                            horizontalCenter: parent.horizontalCenter
+                            left: parent.left
+                            right: parent.right
+                            leftMargin: 15
+                            rightMargin: 15
+                            top: img.bottom
+                            topMargin: 15
+                        }
+                        wrapMode: Text.WordWrap
+                        font.pointSize: 12
+                        color: "#718096"
+                    }
+                    FlatButton {
+                        id: btn
+                        text: "创建"
+                        textColor: "#00BAAD"
+                        hasBorder: true
+                        borderColor: "#00BAAD"
+                        anchors {
+                            horizontalCenter: parent.horizontalCenter
+                            bottom: parent.bottom
+                            bottomMargin: 15
+                        }
+                        font.pointSize: 12
+                        onClicked: {
+                            dialog1.open()
+                        }
+                    }
+                    Dialog {
+                        id: dialog1
+                        height: 320
+                        width: 430
+                        x: (dialog.width - width) / 2
+                        Column {
+                            spacing: 10
+                            Text {
+                                text: "容器创建设置——" + model.name
+                                font.pointSize: 16
+                            }
+                            Grid {
+                                columns: 2
+                                columnSpacing: 10
+                                rows: 3
+                                rowSpacing: 15
+                                TextBox {
+                                    id: userPasswd
+                                    hint: "系统密码"
+                                    width: 200
+                                    font.pointSize: 12
+                                    echoMode: TextField.Password
+                                }
+                                TextBox {
+                                    id: userPasswd2
+                                    hint: "确认系统密码"
+                                    width: 200
+                                    font.pointSize: 12
+                                    echoMode: TextField.Password
+                                }
+                                TextBox {
+                                    id: vncPasswd
+                                    hint: "桌面密码"
+                                    width: 200
+                                    font.pointSize: 12
+                                    echoMode: TextField.Password
+                                }
+                                TextBox {
+                                    id: vncPasswd2
+                                    hint: "确认桌面密码"
+                                    width: 200
+                                    font.pointSize: 12
+                                    echoMode: TextField.Password
+                                }
+                                TextBox {
+                                    id: containerName
+                                    hint: "容器名称"
+                                    width: 200
+                                    font.pointSize: 12
+                                }
+                                TextBox {
+                                    id: remark
+                                    hint: "系统用途备注"
+                                    width: 200
+                                    font.pointSize: 12
+                                }
+                            }
+                            Row {
+                                spacing: 5
+                                RaisedButton {
+                                    text: "确认"
+                                    color: "#2196f3"
+                                    textColor: "#fff"
+                                    rippleColor: "#fff"
+                                    font.pointSize: 12
+                                    width: 200
+                                    height: 30
+                                    enabled: userPasswd.text !== ""
+                                             && userPasswd.text === userPasswd2.text
+                                             && vncPasswd.text !== ""
+                                             && vncPasswd.text === vncPasswd2.text
+                                             && containerName.text !== ""
+                                    onClicked: {
+                                        VzTemplateViewModel.createContainer(
+                                                    model.osTemplate,
+                                                    userPasswd.text,
+                                                    vncPasswd.text)
+                                        dialog1.close()
+                                    }
+                                }
+                                RaisedButton {
+                                    text: "取消"
+                                    font.pointSize: 12
+                                    width: 200
+                                    height: 30
+                                    onClicked: {
+                                        dialog1.close()
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    NumberAnimation {
+        id: down
+        target: dialog
+        property: "y"
+        from: 70
+        to: 70 + 120
+        duration: 500
+        easing.type: Easing.InOutQuad
+        onFinished: up.start()
+    }
+    NumberAnimation {
+        id: up
+        target: dialog
+        property: "y"
+        from: 70 + 120
+        to: 70
+        duration: 3000
+        easing.type: Easing.InOutQuad
+    }
+
+    Connections {
+        target: VzTemplateViewModel
+        function onLoadFailed(message) {
+            down.start()
+            showError("Error: " + message, 4000)
+        }
+    }
+
     FloatingActionButton {
         anchors {
             bottom: parent.bottom
@@ -78,5 +272,9 @@ Item {
             rightMargin: 25
         }
         iconSource: "qrc:/res/img/download.png"
+        onClicked: {
+            VzTemplateViewModel.load()
+            dialog.open()
+        }
     }
 }

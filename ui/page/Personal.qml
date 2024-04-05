@@ -1,5 +1,6 @@
 import QtQuick 2.15
 import QtQuick.Layouts
+import QtQuick.Controls
 import container_desktop
 import "../component"
 
@@ -74,16 +75,19 @@ ScrollablePage {
                 TextBox {
                     width: 300
                     hint: "old password"
+                    echoMode: TextField.Password
                 }
                 TextBox {
                     id: textBox_passwd
                     width: 300
                     hint: "new password"
+                    echoMode: TextField.Password
                 }
                 TextBox {
                     id: textBox_passwdRetype
                     width: 300
                     hint: "confirm password"
+                    echoMode: TextField.Password
                 }
             }
             RaisedButton {

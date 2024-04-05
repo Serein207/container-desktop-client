@@ -152,6 +152,9 @@ public:
     void getVzTemplates(const QString& node, std::function<void(Result<QList<VzTemp>>)> callback);
     void getConfig(const QString& node, const QString& vmId,
                    std::function<void(Result<Config>)> callback);
+    void createContainer(const QString& node, const QString& osTemplate,
+                         const QString& userPassword, const QString& vncPassword,
+                         std::function<void(Result<QJsonObject>)> callback);
 
     // snapshot
     void getSnapshots(const QString& node, const QString& vmId,

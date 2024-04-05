@@ -237,6 +237,17 @@ void ContainerDesktop::NetworkClient::getConfig(const QString& node, const QStri
                   });
 }
 
+void ContainerDesktop::NetworkClient::createContainer(
+    const QString& node, const QString& osTemplate, const QString& userPassword,
+    const QString& vncPassword, std::function<void(Result<QJsonObject>)> callback) {
+    auto url = QUrl(API_GATEWAY + "/api2/json/nodes/" + node + "/lxc");
+    auto data = QJsonDocument(QJsonObject{
+        {"ostemplate", osTemplate}, {"userpassword", userPassword}, {"vncpassword", vncPassword}});
+    request<Api2>(
+        Method::POST, url, data,
+        [callback = std::move(callback)](Result<QJsonObject> result) { callback(result); });
+}
+
 void ContainerDesktop::NetworkClient::getSnapshots(
     const QString& node, const QString& vmId,
     std::function<void(Result<QList<Snapshot>>)> callback) {
