@@ -104,9 +104,8 @@ void ContainerDesktop::NetworkClient::modifyPassword(
         [callback = std::move(callback)](Result<QJsonObject> result) { callback(result); });
 }
 
-void ContainerDesktop::NetworkClient::getProfile(const QString& username,
-                                                 std::function<void(Result<Profile>)> callback) {
-    auto url = QUrl(API_GATEWAY + "/api2/json/access/users/" + username + u"@pve"_qs);
+void ContainerDesktop::NetworkClient::getProfile(std::function<void(Result<Profile>)> callback) {
+    auto url = QUrl(API_GATEWAY + "/api2/json/access/users");
     auto data = QJsonDocument();
     request<Api2>(Method::GET, url, data,
                   [callback = std::move(callback)](Result<QJsonObject> result) {

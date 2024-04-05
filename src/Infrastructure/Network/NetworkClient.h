@@ -124,7 +124,7 @@ public:
                       std::function<void(Result<QJsonObject>)> callback);
     void modifyPassword(const QString& username, const QString& password,
                         std::function<void(Result<QJsonObject>)> callback);
-    void getProfile(const QString& username, std::function<void(Result<Profile>)> callback);
+    void getProfile(std::function<void(Result<Profile>)> callback);
     void modifyProfile(const QString& username, const QString& newEmail,
                        const QString& newFirstName, const QString& newLastName,
                        std::function<void(Result<QJsonObject>)> callback);

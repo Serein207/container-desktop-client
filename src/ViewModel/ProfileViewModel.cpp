@@ -5,18 +5,17 @@
 ProfileViewModel::ProfileViewModel(QObject* parent) : QObject(parent) {}
 
 void ProfileViewModel::load() {
-    ContainerDesktop::NetworkClient::getInstance()->getProfile(
-        CacheManager::getInstance()->getUsername().value(), [this](Result<Profile> result) {
-            if (result.isErr()) {
-                emit loadFailed(result.unwrapErr().message);
-                return;
-            }
-            auto profile = result.unwrap();
-            setEmail(profile.email.value_or(""));
-            setFirstName(profile.firstName.value_or(""));
-            setLastName(profile.lastName.value_or(""));
-            emit loadSuccess();
-        });
+    ContainerDesktop::NetworkClient::getInstance()->getProfile([this](Result<Profile> result) {
+        if (result.isErr()) {
+            emit loadFailed(result.unwrapErr().message);
+            return;
+        }
+        auto profile = result.unwrap();
+        setEmail(profile.email.value_or(""));
+        setFirstName(profile.firstName.value_or(""));
+        setLastName(profile.lastName.value_or(""));
+        emit loadSuccess();
+    });
 }
 
 void ProfileViewModel::updateProfile(const QString& newEmail, const QString& newFirstName,
