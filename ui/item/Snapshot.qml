@@ -45,6 +45,9 @@ Item {
                 rightMargin: 30
                 verticalCenter: parent.verticalCenter
             }
+            onClicked: {
+                dialog1.open()
+            }
         }
 
         Rectangle {
@@ -57,6 +60,54 @@ Item {
             }
         }
     }
+
+    Dialog {
+        id: dialog1
+        width: 170
+        height: 150
+        x: (parent.width - width) / 2 - 65
+        Column {
+            anchors.horizontalCenter: parent.horizontalPadding
+            spacing: 10
+            Text {
+                text: "输入快照名称"
+                anchors.horizontalCenter: parent.horizontalCenter
+            }
+            TextBox {
+                id: textBox
+                width: 150
+                anchors.horizontalCenter: parent.horizontalCenter
+                font.pointSize: 12
+            }
+            Row {
+                spacing: 5
+                RaisedButton {
+                    text: "确认"
+                    color: "#2196f3"
+                    textColor: "#fff"
+                    rippleColor: "#fff"
+                    font.pointSize: 12
+                    width: 70
+                    height: 30
+                    enabled: textBox.text !== ""
+                    onClicked: {
+                        SnapshotViewModel.createSnapshot(vmId, textBox.text)
+                        dialog1.close()
+                    }
+                }
+                RaisedButton {
+                    text: "取消"
+                    font.pointSize: 12
+                    width: 70
+                    height: 30
+                    onClicked: {
+                        dialog1.close()
+                    }
+                }
+            }
+        }
+    }
+
     Flickable {
         id: flickview
         clip: true
@@ -76,7 +127,7 @@ Item {
             anchors.fill: parent
             Repeater {
                 delegate: snapshot
-                model: 10
+                model: SnapshotViewModel
             }
         }
     }
@@ -87,7 +138,7 @@ Item {
             width: control.width
             height: 50
             Text {
-                text: "current"
+                text: model.name
                 font.pointSize: 12
                 anchors {
                     verticalCenter: parent.verticalCenter
@@ -96,7 +147,7 @@ Item {
                 }
             }
             Text {
-                text: "You are here!"
+                text: model.description
                 font.pointSize: 12
                 anchors {
                     verticalCenter: parent.verticalCenter
@@ -117,6 +168,9 @@ Item {
                     font.weight: Font.Normal
                     height: 30
                     width: 50
+                    onClicked: {
+                        SnapshotViewModel.rollbackSnapshot(vmId, model.name)
+                    }
                 }
                 RaisedButton {
                     text: "删除"
@@ -125,6 +179,47 @@ Item {
                     font.weight: Font.Normal
                     height: 30
                     width: 50
+                    onClicked: {
+                        dialog.open()
+                    }
+                }
+                Dialog {
+                    id: dialog
+                    height: 100
+                    width: 170
+                    Column {
+                        spacing: 10
+                        Text {
+                            text: "确认删除？"
+                            anchors.horizontalCenter: parent.horizontalCenter
+                        }
+                        Row {
+                            spacing: 5
+                            RaisedButton {
+                                text: "确认"
+                                color: "#2196f3"
+                                textColor: "#fff"
+                                rippleColor: "#fff"
+                                font.pointSize: 12
+                                width: 70
+                                height: 30
+                                onClicked: {
+                                    SnapshotViewModel.deleteSnapshot(vmId,
+                                                                     model.name)
+                                    dialog.close()
+                                }
+                            }
+                            RaisedButton {
+                                text: "取消"
+                                font.pointSize: 12
+                                width: 70
+                                height: 30
+                                onClicked: {
+                                    dialog.close()
+                                }
+                            }
+                        }
+                    }
                 }
             }
             Rectangle {
@@ -136,6 +231,20 @@ Item {
                     horizontalCenter: parent.horizontalCenter
                 }
             }
+        }
+    }
+
+    Connections {
+        target: SnapshotViewModel
+        function onLoadSuccess() {
+            showSuccess("操作成功", 4000)
+        }
+    }
+
+    Connections {
+        target: SnapshotViewModel
+        function onLoadFailed(message) {
+            showError("Error: " + message, 4000)
         }
     }
 }

@@ -42,7 +42,7 @@ Item {
                     font.pointSize: 14
                 }
             }
-            model: ["kylin-mini-demo", "ubuntu", "4096", "local-lvm:vm-1001-disk,size=8G", "amd64", "4"]
+            model: [ConfigViewModel.hostname, ConfigViewModel.ostype, ConfigViewModel.memory, ConfigViewModel.rootfs, ConfigViewModel.arch, ConfigViewModel.cores]
         }
     }
 

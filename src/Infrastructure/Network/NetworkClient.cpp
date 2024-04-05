@@ -3,10 +3,19 @@
 #include "Infrastructure/Deserializer/Deserializer.hpp"
 #include "Infrastructure/Utility/Result.hpp"
 #include "Model/ContainerBlock.h"
+#include "Model/RrdData.h"
+#include "Model/Snapshot.h"
+#include "Model/VzTemp.h"
 #include "TcpSockify.h"
 #include <QNetworkProxy>
 #include <functional>
 #include <optional>
+#include <qdatetime.h>
+#include <qjsonarray.h>
+#include <qjsondocument.h>
+#include <qjsonobject.h>
+#include <qlist.h>
+#include <qurlquery.h>
 #include <utility>
 
 static auto API_GATEWAY = QStringLiteral("http://192.168.0.195");
@@ -95,6 +104,27 @@ void ContainerDesktop::NetworkClient::modifyPassword(
         [callback = std::move(callback)](Result<QJsonObject> result) { callback(result); });
 }
 
+void ContainerDesktop::NetworkClient::getProfile(const QString& username,
+                                                 std::function<void(Result<Profile>)> callback) {
+    auto url = QUrl(API_GATEWAY + "/api2/json/access/users/" + username + u"@pve"_qs);
+    auto data = QJsonDocument();
+    request<Api2>(Method::GET, url, data,
+                  [callback = std::move(callback)](Result<QJsonObject> result) {
+                      callback(result.andThen(Deserializer<Profile>::from));
+                  });
+}
+
+void ContainerDesktop::NetworkClient::modifyProfile(
+    const QString& username, const QString& newEmail, const QString& newFirstName,
+    const QString& newLastName, std::function<void(Result<QJsonObject>)> callback) {
+    auto url = QUrl(API_GATEWAY + "/api2/json/access/users/" + username + u"@pve"_qs);
+    auto data = QJsonDocument(
+        QJsonObject{{"email", newEmail}, {"firstname", newFirstName}, {"lastname", newLastName}});
+    request<Api2>(
+        Method::PUT, url, data,
+        [callback = std::move(callback)](Result<QJsonObject> result) { callback(result); });
+}
+
 void ContainerDesktop::NetworkClient::getClusterStatusInfo(
     std::function<void(Result<QJsonArray>)> callback) {
     auto url = QUrl(API_GATEWAY + "/api2/json/cluster/resources");
@@ -175,4 +205,83 @@ void ContainerDesktop::NetworkClient::resumeContainer(
     request<Api2>(
         Method::POST, url, data,
         [callback = std::move(callback)](Result<QJsonObject> result) { callback(result); });
+}
+
+void ContainerDesktop::NetworkClient::getRrdData(
+    const QString& node, const QString& vmId,
+    std::function<void(Result<QList<RrdData>>)> callback) {
+    auto url = QUrl(API_GATEWAY + "/api2/json/nodes/" + node + "lxc/" + vmId + "/rrddata");
+    auto data = QJsonDocument(QJsonObject{{"timeframe", "hour"}});
+    request<Api2>(Method::GET, url, data,
+                  [callback = std::move(callback)](Result<QJsonArray> result) {
+                      callback(result.andThen(Deserializer<QList<RrdData>>::from));
+                  });
+}
+
+void ContainerDesktop::NetworkClient::getVzTemplates(
+    const QString& node, std::function<void(Result<QList<VzTemp>>)> callback) {
+    auto url = QUrl(API_GATEWAY + "/api2/json/nodes/" + node + "/vztmpl");
+    auto data = QJsonDocument();
+    request<Api2>(Method::GET, url, data,
+                  [callback = std::move(callback)](Result<QJsonArray> result) {
+                      callback(result.andThen(Deserializer<QList<VzTemp>>::from));
+                  });
+}
+
+void ContainerDesktop::NetworkClient::getConfig(const QString& node, const QString& vmId,
+                                                std::function<void(Result<Config>)> callback) {
+    auto url = QUrl(API_GATEWAY + "/api2/json/nodes/" + node + "/lxc/" + vmId + "/config");
+    auto data = QJsonDocument();
+    request<Api2>(Method::GET, url, data,
+                  [callback = std::move(callback)](Result<QJsonObject> result) {
+                      callback(result.andThen(Deserializer<Config>::from));
+                  });
+}
+
+void ContainerDesktop::NetworkClient::getSnapshots(
+    const QString& node, const QString& vmId,
+    std::function<void(Result<QList<Snapshot>>)> callback) {
+    auto url = QUrl(API_GATEWAY + "/api2/json/nodes/" + node + "/lxc/" + vmId + "/snapshot");
+    auto data = QJsonDocument();
+    request<Api2>(Method::GET, url, data,
+                  [callback = std::move(callback)](Result<QJsonArray> result) {
+                      callback(result.andThen(Deserializer<QList<Snapshot>>::from));
+                  });
+}
+
+void ContainerDesktop::NetworkClient::createSnapshot(
+    const QString& node, const QString& vmId, const QString& snapName,
+    std::function<void(Result<QList<Snapshot>>)> callback) {
+    auto url = QUrl(API_GATEWAY + "/api2/json/nodes/" + node + "/lxc/" + vmId + "/snapshot");
+    auto data = QJsonDocument(QJsonObject{
+        {"snapname", snapName},
+        {"description", QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz 备份")}});
+    request<Api2>(Method::POST, url, data,
+                  [callback = std::move(callback)](Result<QJsonArray> result) {
+                      callback(result.andThen(Deserializer<QList<Snapshot>>::from));
+                  });
+}
+
+void ContainerDesktop::NetworkClient::deleteSnapshot(
+    const QString& node, const QString& vmId, const QString& snapName,
+    std::function<void(Result<QList<Snapshot>>)> callback) {
+    auto url =
+        QUrl(API_GATEWAY + "/api2/json/nodes/" + node + "/lxc/" + vmId + "/snapshot/" + snapName);
+    auto data = QJsonDocument();
+    request<Api2>(Method::DELETE, url, data,
+                  [callback = std::move(callback)](Result<QJsonArray> result) {
+                      callback(result.andThen(Deserializer<QList<Snapshot>>::from));
+                  });
+}
+
+void ContainerDesktop::NetworkClient::rollbackSnapshot(
+    const QString& node, const QString& vmId, const QString& snapName,
+    std::function<void(Result<QList<Snapshot>>)> callback) {
+    auto url = QUrl(API_GATEWAY + "/api2/json/nodes/" + node + "/lxc/" + vmId + "/snapshot/" +
+                    snapName + "/rollback");
+    auto data = QJsonDocument();
+    request<Api2>(Method::POST, url, data,
+                  [callback = std::move(callback)](Result<QJsonArray> result) {
+                      callback(result.andThen(Deserializer<QList<Snapshot>>::from));
+                  });
 }

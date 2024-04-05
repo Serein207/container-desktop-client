@@ -35,6 +35,8 @@ ScrollablePage {
             }
             onMoreClicked: {
                 dialog.vmId = model.vmId
+                ConfigViewModel.load(vmId)
+                SnapshotViewModel.load(vmId)
                 dialog.open()
             }
         }
@@ -46,6 +48,7 @@ ScrollablePage {
         height: pivot.height + 60
         width: 1000
         x: (page.width - dialog.width) / 2 - 65
+        y: 50
         property string vmId
         Pivot {
             id: pivot
@@ -96,8 +99,10 @@ ScrollablePage {
     }
 
     Connections {
-        target: ContainerViewModel
-        function onLoadSuccess() {}
+        target: ConfigViewModel
+        function onLoadFailed(message) {
+            showError("Error: " + message, 4000)
+        }
     }
 
     onErrorClicked: {

@@ -38,5 +38,6 @@
         <file>ui/item/Snapshot.qml</file>
         <file>ui/item/ContainerSettings.qml</file>
         <file>ui/item/RemoteDesktop.qml</file>
+        <file>ui/component/Dialog.qml</file>
     </qresource>
 </RCC>

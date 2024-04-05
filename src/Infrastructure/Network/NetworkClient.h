@@ -2,8 +2,13 @@
 #define NETWORKCLIENT_H
 
 #include "Infrastructure/Utility/Result.hpp"
+#include "Model/Config.h"
 #include "Model/ContainerBlock.h"
+#include "Model/Profile.h"
+#include "Model/RrdData.h"
+#include "Model/Snapshot.h"
 #include "Model/User.h"
+#include "Model/VzTemp.h"
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -92,12 +97,12 @@ public:
                 if constexpr (std::is_invocable_v<TCallback, Result<QJsonObject>>) {
                     if (json["data"].isObject())
                         callback(Result<QJsonObject>(json["data"].toObject()));
-                    else if (json["data"].isNull())
+                    else
                         callback(Result<QJsonObject>(QJsonObject{}));
                 } else if constexpr (std::is_invocable_v<TCallback, Result<QJsonArray>>) {
                     if (json["data"].isArray())
                         callback(Result<QJsonArray>(json["data"].toArray()));
-                    else if (json["data"].isNull())
+                    else
                         callback(Result<QJsonArray>(
                             ErrorInfo{ErrorKind::JsonParseError, "Failed to parse JSON"}));
                 }
@@ -119,6 +124,10 @@ public:
                       std::function<void(Result<QJsonObject>)> callback);
     void modifyPassword(const QString& username, const QString& password,
                         std::function<void(Result<QJsonObject>)> callback);
+    void getProfile(const QString& username, std::function<void(Result<Profile>)> callback);
+    void modifyProfile(const QString& username, const QString& newEmail,
+                       const QString& newFirstName, const QString& newLastName,
+                       std::function<void(Result<QJsonObject>)> callback);
 
     // container
     void getClusterStatusInfo(std::function<void(Result<QJsonArray>)> callback);
@@ -138,6 +147,21 @@ public:
                           std::function<void(Result<QJsonObject>)> callback);
     void resumeContainer(const QString& node, const QString& vmId,
                          std::function<void(Result<QJsonObject>)> callback);
+    void getRrdData(const QString& node, const QString& vmId,
+                    std::function<void(Result<QList<RrdData>>)> callback);
+    void getVzTemplates(const QString& node, std::function<void(Result<QList<VzTemp>>)> callback);
+    void getConfig(const QString& node, const QString& vmId,
+                   std::function<void(Result<Config>)> callback);
+
+    // snapshot
+    void getSnapshots(const QString& node, const QString& vmId,
+                      std::function<void(Result<QList<Snapshot>>)> callback);
+    void createSnapshot(const QString& node, const QString& vmId, const QString& snapName,
+                        std::function<void(Result<QList<Snapshot>>)> callback);
+    void deleteSnapshot(const QString& node, const QString& vmId, const QString& snapName,
+                        std::function<void(Result<QList<Snapshot>>)> callback);
+    void rollbackSnapshot(const QString& node, const QString& vmId, const QString& snapName,
+                          std::function<void(Result<QList<Snapshot>>)> callback);
 
 private:
     QNetworkAccessManager manager;

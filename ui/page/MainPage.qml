@@ -2,6 +2,7 @@ import QtQuick 2.15
 import QtQuick.Controls
 import container_desktop
 import "../component"
+import "../page"
 
 Item {
     id: control
@@ -10,9 +11,25 @@ Item {
         id: swipeView
         currentIndex: navigation.currentIndex
         anchors.fill: parent
-        Manager {}
-        Panel {}
-        Personal {}
+        Manager {
+            id: manager
+        }
+        Panel {
+            id: panel
+        }
+        Personal {
+            id: personal
+        }
+        onCurrentIndexChanged: {
+            if (currentIndex === 0) {
+                manager.showLoadingView()
+                ContainerBlockViewModel.load()
+            }
+            if (currentIndex === 2) {
+                manager.showLoadingView()
+                ProfileViewModel.load()
+            }
+        }
     }
 
     Navigation {

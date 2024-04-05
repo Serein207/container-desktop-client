@@ -146,6 +146,7 @@ Item {
                     upper: false
                     Layout.alignment: Qt.AlignHCenter
                     text: control.errorButtonText
+                    hasBorder: true
                     onClicked: {
                         control.errorClicked()
                     }

@@ -3,12 +3,17 @@
 
 #include "Infrastructure/Utility/Result.hpp"
 #include "Model/Address.h"
+#include "Model/Config.h"
 #include "Model/ContainerBlock.h"
+#include "Model/Profile.h"
+#include "Model/RrdData.h"
+#include "Model/Snapshot.h"
 #include "Model/User.h"
+#include "Model/VzTemp.h"
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QJsonValue>
-#include <qlist.h>
+#include <optional>
 
 #define CONTAINS_OR_NOT_NULL(field)                                                                \
     if (!obj.contains(field) || obj[field].isNull())                                               \
@@ -109,6 +114,163 @@ struct Deserializer<QList<Address>> {
             ret.append(result.unwrap());
         }
         return ret;
+    }
+};
+
+template <>
+struct Deserializer<RrdData> {
+    static Result<RrdData> from(const QJsonValue& value) {
+        if (!value.isObject()) {
+            return ErrorInfo(ErrorKind::JsonDeserializeError, "Invalid JSON type");
+        }
+        auto obj = value.toObject();
+        CONTAINS_OR_NOT_NULL("time");
+        auto time = QDateTime::fromSecsSinceEpoch(obj["name"].toInteger());
+        CONTAINS_OR_NOT_NULL("netin");
+        auto netIn = obj["netin"].toDouble();
+        CONTAINS_OR_NOT_NULL("netout");
+        auto netOut = obj["netout"].toDouble();
+        CONTAINS_OR_NOT_NULL("cpu");
+        auto cpu = obj["cpu"].toDouble();
+        CONTAINS_OR_NOT_NULL("iowait");
+        auto ioWait = obj["iowait"].toDouble();
+        CONTAINS_OR_NOT_NULL("memUsed");
+        auto memUsed = obj["memUsed"].toDouble();
+        return RrdData{time, cpu, ioWait, netIn, netOut, memUsed};
+    }
+};
+
+template <>
+struct Deserializer<QList<RrdData>> {
+    static Result<QList<RrdData>> from(const QJsonValue& value) {
+        if (!value.isArray()) {
+            return ErrorInfo(ErrorKind::JsonDeserializeError, "Invalid JSON type");
+        }
+        auto array = value.toArray();
+        QList<RrdData> ret;
+        for (const auto& obj : array) {
+            auto result = Deserializer<RrdData>::from(obj.toObject());
+            if (result.isErr())
+                return Result<QList<RrdData>>(
+                    ErrorInfo{ErrorKind::JsonDeserializeError, "Invalid JSON type"});
+            ret.append(result.unwrap());
+        }
+        return ret;
+    }
+};
+
+template <>
+struct Deserializer<Snapshot> {
+    static Result<Snapshot> from(const QJsonValue& value) {
+        if (!value.isObject()) {
+            return ErrorInfo(ErrorKind::JsonDeserializeError, "Invalid JSON type");
+        }
+        auto obj = value.toObject();
+        CONTAINS_OR_NOT_NULL("name");
+        auto name = obj["name"].toString();
+        CONTAINS_OR_NOT_NULL("description");
+        auto description = obj["description"].toString();
+        return Snapshot{name, description};
+    }
+};
+
+template <>
+struct Deserializer<QList<Snapshot>> {
+    static Result<QList<Snapshot>> from(const QJsonValue& value) {
+        if (!value.isArray()) {
+            return ErrorInfo(ErrorKind::JsonDeserializeError, "Invalid JSON type");
+        }
+        auto array = value.toArray();
+        QList<Snapshot> ret;
+        for (const auto& obj : array) {
+            auto result = Deserializer<Snapshot>::from(obj.toObject());
+            if (result.isErr())
+                return Result<QList<Snapshot>>(
+                    ErrorInfo{ErrorKind::JsonDeserializeError, "Invalid JSON type"});
+            ret.append(result.unwrap());
+        }
+        return ret;
+    }
+};
+
+template <>
+struct Deserializer<VzTemp> {
+    static Result<VzTemp> from(const QJsonValue& value) {
+        if (!value.isObject()) {
+            return ErrorInfo(ErrorKind::JsonDeserializeError, "Invalid JSON type");
+        }
+        auto obj = value.toObject();
+        CONTAINS_OR_NOT_NULL("name");
+        auto name = obj["name"].toString();
+        CONTAINS_OR_NOT_NULL("description");
+        auto description = obj["description"].toString();
+        CONTAINS_OR_NOT_NULL("ostemplate");
+        auto osTemplate = obj["ostemplate"].toString();
+        CONTAINS_OR_NOT_NULL("ostype");
+        auto osType = obj["ostype"].toString();
+        return VzTemp{name, description, osTemplate, osType};
+    }
+};
+
+template <>
+struct Deserializer<QList<VzTemp>> {
+    static Result<QList<VzTemp>> from(const QJsonValue& value) {
+        if (!value.isArray()) {
+            return ErrorInfo(ErrorKind::JsonDeserializeError, "Invalid JSON type");
+        }
+        auto array = value.toArray();
+        QList<VzTemp> ret;
+        for (const auto& obj : array) {
+            auto result = Deserializer<VzTemp>::from(obj.toObject());
+            if (result.isErr())
+                return Result<QList<VzTemp>>(
+                    ErrorInfo{ErrorKind::JsonDeserializeError, "Invalid JSON type"});
+            ret.append(result.unwrap());
+        }
+        return ret;
+    }
+};
+
+template <>
+struct Deserializer<Config> {
+    static Result<Config> from(const QJsonValue& value) {
+        if (!value.isObject()) {
+            return ErrorInfo(ErrorKind::JsonDeserializeError, "Invalid JSON type");
+        }
+        auto obj = value.toObject();
+        CONTAINS_OR_NOT_NULL("hostname");
+        auto hostname = obj["hostname"].toString();
+        CONTAINS_OR_NOT_NULL("arch");
+        auto arch = obj["arch"].toString();
+        CONTAINS_OR_NOT_NULL("ostype");
+        auto ostype = obj["ostype"].toString();
+        CONTAINS_OR_NOT_NULL("rootfs");
+        auto rootfs = obj["rootfs"].toString();
+        CONTAINS_OR_NOT_NULL("cores");
+        auto cores = obj["cores"].toInt();
+        CONTAINS_OR_NOT_NULL("memory");
+        auto memory = obj["memory"].toInt();
+        return Config{hostname, arch, ostype, rootfs, cores, memory};
+    }
+};
+
+template <>
+struct Deserializer<Profile> {
+    static Result<Profile> from(const QJsonValue& value) {
+        if (!value.isObject()) {
+            return ErrorInfo(ErrorKind::JsonDeserializeError, "Invalid JSON type");
+        }
+        auto obj = value.toObject();
+        std::optional<QString> email = std::nullopt;
+        if (obj.contains("email") && !obj["email"].isNull())
+            email = obj["email"].toString();
+        std::optional<QString> firstName = std::nullopt;
+        if (obj.contains("firstName") && !obj["firstName"].isNull())
+            email = obj["firstName"].toString();
+        std::optional<QString> lastName = std::nullopt;
+        if (obj.contains("lastName") && !obj["lastName"].isNull())
+            email = obj["lastName"].toString();
+        return Profile{email, firstName, lastName};
     }
 };
 
