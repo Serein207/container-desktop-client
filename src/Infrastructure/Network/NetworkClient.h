@@ -57,8 +57,6 @@ public:
         connect(reply, &QNetworkReply::finished, [=] {
             auto content = reply->readAll();
             auto networkError = reply->error();
-            qDebug() << "Network error: " << networkError;
-            qDebug() << content.toStdString().c_str();
 
             if (networkError != QNetworkReply::NoError) {
                 callback(

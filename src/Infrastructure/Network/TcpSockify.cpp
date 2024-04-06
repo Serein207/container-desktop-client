@@ -20,10 +20,8 @@ TcpSockify::~TcpSockify() {
 }
 
 void TcpSockify::connectToServer(const QUrl& url) {
-    qDebug() << "try to connect" << url;
     connect(tcpServer, &QTcpServer::newConnection, this, [this, url] {
         tcpSocket = tcpServer->nextPendingConnection();
-        qDebug() << "tcp server connected!";
         connect(tcpSocket, &QTcpSocket::readyRead, this,
                 [this] { webSocket->sendBinaryMessage(tcpSocket->readAll()); });
         webSocket->open(url);
