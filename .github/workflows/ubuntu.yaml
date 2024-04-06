@@ -79,12 +79,13 @@ jobs:
         run: |
           export QML_SOURCES_PATHS=./
           echo "[Desktop Entry]" > container-desktop-appimage.desktop
-          echo "Categories=X-Multimedia;" >> container-desktop-appimage.desktop
+          echo "Categories=Office;" >> container-desktop-appimage.desktop
           echo "Icon=app_icon" >> container-desktop-appimage.desktop
           echo "Name=Container Desktop" >> container-desktop-appimage.desktop
           echo "Type=Application" >> container-desktop-appimage.desktop
           echo "Exec=container-desktop" >> container-desktop-appimage.desktop
           linuxdeploy-x86_64.AppImage --plugin=qt --output=appimage --desktop-file=container-desktop-appimage.desktop --icon-file=app_icon.svg --executable=bin/release/container-desktop --appdir AppDir
+          ls -alh .
           mv container*.AppImage ${{ env.targetName }}_appimage_x86_64.AppImage
       
       - name: Calculate SHA256
