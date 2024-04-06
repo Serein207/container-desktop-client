@@ -3,6 +3,8 @@
 #include "Infrastructure/Network/NetworkClient.h"
 #include "Infrastructure/Utility/Result.hpp"
 #include "Infrastructure/Utility/Tools.h"
+#include "Model/ContainerBlock.h"
+#include <algorithm>
 
 ContainerBlockViewModel::ContainerBlockViewModel(QObject* parent) : QAbstractListModel(parent) {}
 
@@ -88,6 +90,18 @@ void ContainerBlockViewModel::load() {
             }
             emit loadFailed("无法获取节点数据");
         });
+}
+
+QString ContainerBlockViewModel::getFirstVmId() {
+    if (model.empty())
+        return 0;
+    return model[0].vmId;
+}
+
+int ContainerBlockViewModel::getRunningVmNum() {
+    return std::count_if(model.begin(), model.end(), [](ContainerBlock& containerBlock) {
+        return containerBlock.status == "running";
+    });
 }
 
 bool ContainerBlockViewModel::parseData(const QJsonObject& obj) {

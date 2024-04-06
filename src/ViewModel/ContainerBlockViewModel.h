@@ -33,6 +33,8 @@ public:
     void resetModel(QList<ContainerBlock> newModel);
 
     Q_INVOKABLE void load();
+    Q_INVOKABLE QString getFirstVmId();
+    Q_INVOKABLE int getRunningVmNum();
 
 private:
     bool parseData(const QJsonObject& obj);

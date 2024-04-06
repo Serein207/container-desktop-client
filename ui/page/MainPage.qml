@@ -25,6 +25,11 @@ Item {
                 manager.showLoadingView()
                 ContainerBlockViewModel.load()
             }
+            if (currentIndex === 1) {
+                panel.showLoadingView()
+                PanelViewModel.load(ContainerBlockViewModel.getFirstVmId(),
+                                    "hour")
+            }
             if (currentIndex === 2) {
                 manager.showLoadingView()
                 ProfileViewModel.load()
@@ -76,7 +81,7 @@ Item {
         width: 1000
         height: 540
         x: (parent.width - dialog.width) / 2
-        y: 70
+        y: 120
         Item {
             anchors {
                 top: parent.top
@@ -96,12 +101,13 @@ Item {
                 anchors.fill: parent
                 delegate: Area {
                     width: 240
-                    height: 240 + text.implicitHeight
+                    height: 380
                     Image {
                         id: img
-                        source: "qrc:/res/img/kylinOS.png"
+                        source: model.url
                         width: 150
                         height: 150
+                        fillMode: Image.PreserveAspectFit
                         anchors {
                             top: parent.top
                             topMargin: 10
@@ -112,7 +118,6 @@ Item {
                         id: text
                         text: model.description
                         anchors {
-                            horizontalCenter: parent.horizontalCenter
                             left: parent.left
                             right: parent.right
                             leftMargin: 15
@@ -137,14 +142,17 @@ Item {
                         }
                         font.pointSize: 12
                         onClicked: {
-                            dialog1.open()
+                            if (model.name === "ubuntuKylin")
+                                dialog1.open()
+                            else
+                                showWarning("暂不支持该系统 :(", 3000)
                         }
                     }
                     Dialog {
                         id: dialog1
                         height: 320
                         width: 430
-                        x: (dialog.width - width) / 2
+                        x: (dialog.width - width) / 2 - 65
                         Column {
                             spacing: 10
                             Text {
@@ -236,30 +244,10 @@ Item {
             }
         }
     }
-    NumberAnimation {
-        id: down
-        target: dialog
-        property: "y"
-        from: 70
-        to: 70 + 120
-        duration: 500
-        easing.type: Easing.InOutQuad
-        onFinished: up.start()
-    }
-    NumberAnimation {
-        id: up
-        target: dialog
-        property: "y"
-        from: 70 + 120
-        to: 70
-        duration: 3000
-        easing.type: Easing.InOutQuad
-    }
 
     Connections {
         target: VzTemplateViewModel
         function onLoadFailed(message) {
-            down.start()
             showError("Error: " + message, 4000)
         }
     }

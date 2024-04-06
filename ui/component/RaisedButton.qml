@@ -14,13 +14,14 @@ Item {
     property bool loading: false
     property bool enabled: !loading
     property alias font: label.font
+    property int radius: 3
 
     signal clicked
 
     Rectangle {
         id: background
         anchors.fill: parent
-        radius: 3 * 1
+        radius: button.radius
         color: button.enabled ? button.color : "#eaeaea"
         visible: false
     }
@@ -76,7 +77,7 @@ Item {
 
     PaperRipple {
         id: ripple
-        radius: 3
+        radius: button.radius
         mouseArea: mouseArea
     }
 

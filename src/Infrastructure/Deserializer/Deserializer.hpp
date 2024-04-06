@@ -8,6 +8,7 @@
 #include "Model/Profile.h"
 #include "Model/RrdData.h"
 #include "Model/Snapshot.h"
+#include "Model/Status.h"
 #include "Model/User.h"
 #include "Model/VzTemp.h"
 #include <QJsonArray>
@@ -125,18 +126,18 @@ struct Deserializer<RrdData> {
         }
         auto obj = value.toObject();
         CONTAINS_OR_NOT_NULL("time");
-        auto time = QDateTime::fromSecsSinceEpoch(obj["name"].toInteger());
+        auto time = QDateTime::fromSecsSinceEpoch(obj["time"].toInteger());
         CONTAINS_OR_NOT_NULL("netin");
         auto netIn = obj["netin"].toDouble();
         CONTAINS_OR_NOT_NULL("netout");
         auto netOut = obj["netout"].toDouble();
         CONTAINS_OR_NOT_NULL("cpu");
         auto cpu = obj["cpu"].toDouble();
-        CONTAINS_OR_NOT_NULL("iowait");
-        auto ioWait = obj["iowait"].toDouble();
-        CONTAINS_OR_NOT_NULL("memUsed");
-        auto memUsed = obj["memUsed"].toDouble();
-        return RrdData{time, cpu, ioWait, netIn, netOut, memUsed};
+        CONTAINS_OR_NOT_NULL("mem");
+        auto memUsed = obj["mem"].toDouble();
+        CONTAINS_OR_NOT_NULL("maxmem");
+        auto memMax = obj["maxmem"].toInteger();
+        return RrdData{time, cpu, netIn, netOut, memUsed, memMax};
     }
 };
 
@@ -271,6 +272,22 @@ struct Deserializer<Profile> {
         if (obj.contains("lastName") && !obj["lastName"].isNull())
             email = obj["lastName"].toString();
         return Profile{email, firstName, lastName};
+    }
+};
+
+template <>
+struct Deserializer<Status> {
+    static Result<Status> from(const QJsonValue& value) {
+        if (!value.isObject()) {
+            return ErrorInfo(ErrorKind::JsonDeserializeError, "Invalid JSON type");
+        }
+        auto obj = value.toObject();
+        CONTAINS_OR_NOT_NULL("cpu");
+        auto cpu = obj["cpu"].toDouble();
+        CONTAINS_OR_NOT_NULL("memory");
+        auto memUsed = obj["memory"].toObject()["used"].toInteger();
+        auto memMax = obj["memory"].toObject()["max"].toInteger();
+        return Status{cpu, memUsed, memMax};
     }
 };
 

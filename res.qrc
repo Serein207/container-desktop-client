@@ -12,7 +12,9 @@
         <file>res/img/cancel.svg</file>
         <file>res/img/search.svg</file>
         <file>res/img/download.png</file>
-        <file>res/img/kylinOS.png</file>
         <file>res/img/plus.svg</file>
+        <file>res/img/template-kylin.png</file>
+        <file>res/img/template-ubuntu.png</file>
+        <file>res/img/txos.png</file>
     </qresource>
 </RCC>

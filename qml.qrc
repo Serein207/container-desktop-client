@@ -39,5 +39,7 @@
         <file>ui/item/ContainerSettings.qml</file>
         <file>ui/item/RemoteDesktop.qml</file>
         <file>ui/component/Dialog.qml</file>
+        <file>ui/component/ComboBox.qml</file>
+        <file>ui/item/SingleLineChart.qml</file>
     </qresource>
 </RCC>

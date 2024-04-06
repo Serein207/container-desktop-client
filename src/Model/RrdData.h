@@ -5,10 +5,10 @@
 struct RrdData {
     QDateTime time;
     double cpu;
-    double ioWait;
     double netIn;
     double netOut;
     double memUsed;
+    qint64 memMax;
 };
 
 #endif // RRD_DATA_H

@@ -20,6 +20,7 @@ public:
         Description,
         OsTemplate,
         OsType,
+        Url,
     };
 
     // Basic functionality:

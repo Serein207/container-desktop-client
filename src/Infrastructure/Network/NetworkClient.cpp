@@ -5,6 +5,7 @@
 #include "Model/ContainerBlock.h"
 #include "Model/RrdData.h"
 #include "Model/Snapshot.h"
+#include "Model/Status.h"
 #include "Model/VzTemp.h"
 #include "TcpSockify.h"
 #include <QNetworkProxy>
@@ -15,6 +16,7 @@
 #include <qjsondocument.h>
 #include <qjsonobject.h>
 #include <qlist.h>
+#include <qurl.h>
 #include <qurlquery.h>
 #include <utility>
 
@@ -207,10 +209,11 @@ void ContainerDesktop::NetworkClient::resumeContainer(
 }
 
 void ContainerDesktop::NetworkClient::getRrdData(
-    const QString& node, const QString& vmId,
+    const QString& node, const QString& vmId, const QString& timeFrame,
     std::function<void(Result<QList<RrdData>>)> callback) {
-    auto url = QUrl(API_GATEWAY + "/api2/json/nodes/" + node + "lxc/" + vmId + "/rrddata");
-    auto data = QJsonDocument(QJsonObject{{"timeframe", "hour"}});
+    auto url = QUrl(API_GATEWAY + "/api2/json/nodes/" + node + "/lxc/" + vmId +
+                    "/rrddata?timeframe=" + timeFrame);
+    auto data = QJsonDocument();
     request<Api2>(Method::GET, url, data,
                   [callback = std::move(callback)](Result<QJsonArray> result) {
                       callback(result.andThen(Deserializer<QList<RrdData>>::from));
@@ -246,6 +249,16 @@ void ContainerDesktop::NetworkClient::createContainer(
     request<Api2>(
         Method::POST, url, data,
         [callback = std::move(callback)](Result<QJsonObject> result) { callback(result); });
+}
+
+void ContainerDesktop::NetworkClient::getNodeStatus(const QString& node,
+                                                    std::function<void(Result<Status>)> callback) {
+    auto url = QUrl(API_GATEWAY + "/api2/json/nodes/" + node + "/status");
+    auto data = QJsonDocument();
+    request<Api2>(Method::GET, url, data,
+                  [callback = std::move(callback)](Result<QJsonObject> result) {
+                      callback(result.andThen(Deserializer<Status>::from));
+                  });
 }
 
 void ContainerDesktop::NetworkClient::getSnapshots(

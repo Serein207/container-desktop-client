@@ -1,11 +1,24 @@
 import QtQuick 2.15
 import QtQuick.Layouts
+import container_desktop
 import "../component"
+import "../item"
 
 ScrollablePage {
+    id: page
+    function getCurrentTime() {
+        var currentDate = new Date()
+        var year = currentDate.getFullYear()
+        var month = ("0" + (currentDate.getMonth() + 1)).slice(-2)
+        var day = ("0" + currentDate.getDate()).slice(-2)
+        var hours = ("0" + currentDate.getHours()).slice(-2)
+        var minutes = ("0" + currentDate.getMinutes()).slice(-2)
+
+        return year + "/" + month + "/" + day + " " + hours + ":" + minutes
+    }
     Area {
         Layout.fillWidth: true
-        height: 220
+        height: 190
         paddings: 20
         Text {
             id: text_title
@@ -17,7 +30,7 @@ ScrollablePage {
             }
         }
         Text {
-            text: "截止至 2022/06/30 12:00"
+            id: text_time
             font.pointSize: 12
             color: "#718096"
             anchors {
@@ -39,13 +52,13 @@ ScrollablePage {
             Row {
                 id: row
                 anchors.centerIn: parent
-                spacing: (parent.width - 340) / 3
+                spacing: (parent.width - 340) / 5
                 Column {
                     spacing: 10
                     Text {
+                        id: container_num
                         font.pointSize: 20
                         font.bold: true
-                        text: "13"
                         anchors.horizontalCenter: parent.horizontalCenter
                     }
                     Text {
@@ -58,9 +71,9 @@ ScrollablePage {
                 Column {
                     spacing: 10
                     Text {
+                        id: running_num
                         font.pointSize: 20
                         font.bold: true
-                        text: "6"
                         anchors.horizontalCenter: parent.horizontalCenter
                     }
                     Text {
@@ -75,13 +88,13 @@ ScrollablePage {
                     Text {
                         font.pointSize: 20
                         font.bold: true
-                        text: "2"
+                        text: PanelViewModel.curMemory
                         anchors.horizontalCenter: parent.horizontalCenter
                     }
                     Text {
                         font.pointSize: 14
                         color: "#718096"
-                        text: "镜像"
+                        text: "已用内存"
                         anchors.horizontalCenter: parent.horizontalCenter
                     }
                 }
@@ -90,100 +103,144 @@ ScrollablePage {
                     Text {
                         font.pointSize: 20
                         font.bold: true
-                        text: "6"
+                        text: PanelViewModel.curNetIn
                         anchors.horizontalCenter: parent.horizontalCenter
                     }
                     Text {
                         font.pointSize: 14
                         color: "#718096"
-                        text: "数据卷"
+                        text: "下载速度"
+                        anchors.horizontalCenter: parent.horizontalCenter
+                    }
+                }
+                Column {
+                    spacing: 10
+                    Text {
+                        font.pointSize: 20
+                        font.bold: true
+                        text: PanelViewModel.curCpu
+                        anchors.horizontalCenter: parent.horizontalCenter
+                    }
+                    Text {
+                        font.pointSize: 14
+                        color: "#718096"
+                        text: "CPU占用"
                         anchors.horizontalCenter: parent.horizontalCenter
                     }
                 }
             }
         }
     }
+    Row {
+        Layout.alignment: Qt.AlignRight
+        Layout.topMargin: 20
+        spacing: 20
+        ComboBox {
+            id: comboBox_vm
+            model: ContainerBlockViewModel
+            textRole: "name"
+            currentIndex: 0
+            width: 200
+            Shadow {
+                radius: 10
+            }
+        }
+        ComboBox {
+            id: comboBox_timeFrame
+            model: ["hour", "day", "week", "month", "year"]
+            currentIndex: 0
+            width: 200
+            Shadow {
+                radius: 10
+            }
+        }
+        RaisedButton {
+            text: "查询"
+            radius: 10
+            height: 50
+            Shadow {
+                radius: 10
+            }
+            onClicked: {
+                showLoadingView()
+                PanelViewModel.load(comboBox_vm.currentValue.vmId,
+                                    comboBox_timeFrame.currentText)
+            }
+        }
+    }
 
-    Area {
+    Connections {
+        target: PanelViewModel
+        function onLoadSuccess() {
+            text_time.text = "截止至 " + getCurrentTime()
+            container_num.text = ContainerBlockViewModel.rowCount()
+            running_num.text = ContainerBlockViewModel.getRunningVmNum()
+            page.labels = JSON.parse(PanelViewModel.arrayTime)
+            netIn.data = JSON.parse(PanelViewModel.arrayNetIn)
+            netOut.data = JSON.parse(PanelViewModel.arrayNetOut)
+            cpu.data = JSON.parse(PanelViewModel.arrayCpu)
+            memory.data = JSON.parse(PanelViewModel.arrayMemory)
+            showSuccessView()
+        }
+    }
+
+    property var labels
+
+    onErrorClicked: {
+        showLoadingView()
+        PanelViewModel.load(comboBox_vm.currentValue.vmId,
+                            comboBox_timeFrame.currentText)
+    }
+
+    Connections {
+        target: PanelViewModel
+        function onLoadFailed(message) {
+            showErrorView()
+            showError("Error:" + message, 4000)
+        }
+    }
+
+    SingleLineChart {
+        id: memory
         Layout.fillWidth: true
         Layout.topMargin: 20
-        height: 320
-        paddings: 20
-        Text {
-            id: text1
-            text: "内存使用率"
-            font.pointSize: 14
-            color: "#718096"
-            anchors {
-                top: parent.top
-                topMargin: 20
-                left: parent.left
-            }
-        }
-        Text {
-            id: text2
-            text: "73%"
-            font.pointSize: 28
-            font.bold: true
-            anchors {
-                horizontalCenter: text1.horizontalCenter
-                top: text1.bottom
-                topMargin: 5
-            }
-        }
-        Text {
-            text: "建议扩容"
-            font.pointSize: 12
-            color: "#718096"
-            anchors {
-                horizontalCenter: text1.horizontalCenter
-                top: text2.bottom
-                topMargin: 5
-            }
-        }
-        Chart {
-            anchors {
-                left: text1.right
-                leftMargin: 20
-                right: parent.right
-                top: text1.top
-                topMargin: 15
-                bottom: parent.bottom
-            }
-            // cpu & iowait
-            // netin & netout
-            // memory
-            chartType: 'line'
-            chartData: {
-                return {
-                    "labels": ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-                    "datasets": [{
-                            "label": 'My First Dataset',
-                            "data": [65, 59, 80, 81, 56, 55, 40],
-                            "fill": true,
-                            "borderColor": 'rgb(75, 192, 192)',
-                            "backgroundColor": 'rgba(75, 192, 192, 0.5)',
-                            "tension": 0.1,
-                            "cubicInterpolationMode": 'monotone',
-                            "tension": 0.4
-                        }]
-                }
-            }
-            chartOptions: {
-                return {
-                    "legend": {
-                        "display": false
-                    },
-                    "maintainAspectRatio": false,
-                    "title": {
-                        "display": false
-                    },
-                    "tooltips": {
-                        "mode": 'index',
-                        "intersect": false
-                    }
-                }
-            }
-        }
+        title: "内存使用率"
+        currentData: PanelViewModel.curMemory
+        labels: page.labels
+        borderColor: 'rgb(75, 192, 192)'
+        backgroundColor: 'rgba(75, 192, 192, 0.5)'
+    }
+
+    SingleLineChart {
+        id: cpu
+        Layout.fillWidth: true
+        Layout.topMargin: 20
+        title: "CPU占用"
+        currentData: PanelViewModel.curCpu
+        labels: page.labels
+        borderColor: 'rgb(61,174,233)'
+        backgroundColor: 'rgba(61,174,233, 0.5)'
+    }
+
+    SingleLineChart {
+        id: netIn
+        Layout.fillWidth: true
+        Layout.topMargin: 20
+        title: "下载速度"
+        currentData: PanelViewModel.curNetIn
+        labels: page.labels
+        borderColor: 'rgb(77,61,233)'
+        backgroundColor: 'rgba(77,61,233, 0.5)'
+    }
+
+    SingleLineChart {
+        id: netOut
+        Layout.fillWidth: true
+        Layout.topMargin: 20
+        title: "上传速度"
+        currentData: PanelViewModel.curNetOut
+        labels: page.labels
+        borderColor: 'rgb(206,61,233)'
+        backgroundColor: 'rgba(206,61,233, 0.5)'
     }
 }

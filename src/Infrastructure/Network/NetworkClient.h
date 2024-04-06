@@ -7,6 +7,7 @@
 #include "Model/Profile.h"
 #include "Model/RrdData.h"
 #include "Model/Snapshot.h"
+#include "Model/Status.h"
 #include "Model/User.h"
 #include "Model/VzTemp.h"
 #include <QJsonArray>
@@ -147,7 +148,7 @@ public:
                           std::function<void(Result<QJsonObject>)> callback);
     void resumeContainer(const QString& node, const QString& vmId,
                          std::function<void(Result<QJsonObject>)> callback);
-    void getRrdData(const QString& node, const QString& vmId,
+    void getRrdData(const QString& node, const QString& vmId, const QString& timeFrame,
                     std::function<void(Result<QList<RrdData>>)> callback);
     void getVzTemplates(const QString& node, std::function<void(Result<QList<VzTemp>>)> callback);
     void getConfig(const QString& node, const QString& vmId,
@@ -155,6 +156,7 @@ public:
     void createContainer(const QString& node, const QString& osTemplate,
                          const QString& userPassword, const QString& vncPassword,
                          std::function<void(Result<QJsonObject>)> callback);
+    void getNodeStatus(const QString& node, std::function<void(Result<Status>)> callback);
 
     // snapshot
     void getSnapshots(const QString& node, const QString& vmId,

@@ -21,7 +21,7 @@ ScrollablePage {
         delegate: ContainerCard {
             id: card
             name: model.name
-            source: "qrc:/res/img/kylinOS.png"
+            source: "qrc:/res/img/template-kylin.png"
             info: model.vmId
             cpu: model.cpu
             memory: model.mem

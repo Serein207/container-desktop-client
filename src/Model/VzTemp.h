@@ -8,6 +8,7 @@ struct VzTemp {
     QString description;
     QString osTemplate;
     QString osType;
+    QString url;
 };
 
 #endif // VZ_TEMP_H

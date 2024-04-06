@@ -3,7 +3,7 @@ import "../component"
 
 Area {
     id: control
-    property url source: "qrc:/res/img/kylinOS.png"
+    property url source: "qrc:/res/img/template-kylin.png"
     property string name
     property string info
     property double cpu

@@ -61,7 +61,7 @@ void SnapshotViewModel::createSnapshot(const QString& vmId, const QString& snapN
         [this, vmId](Result<QList<Snapshot>> result) {
             if (result.unwrapErr().kind == ErrorKind::JsonParseError) {
                 load(vmId);
-                loadSuccess();
+                emit loadSuccess();
                 return;
             }
             emit loadFailed(result.unwrapErr().message);
@@ -75,7 +75,7 @@ void SnapshotViewModel::rollbackSnapshot(const QString& vmId, const QString& sna
         [this, vmId](Result<QList<Snapshot>> result) {
             if (result.unwrapErr().kind == ErrorKind::JsonParseError) {
                 load(vmId);
-                loadSuccess();
+                emit loadSuccess();
                 return;
             }
             emit loadFailed(result.unwrapErr().message);
@@ -94,7 +94,7 @@ void SnapshotViewModel::deleteSnapshot(const QString& vmId, const QString& snapN
                                 [snapName](const Snapshot& snap) { return snap.name == snapName; }),
                             model.end());
                 endResetModel();
-                loadSuccess();
+                emit loadSuccess();
                 return;
             }
             emit loadFailed(result.unwrapErr().message);
