@@ -28,7 +28,7 @@ jobs:
         qt_arch: [gcc_64]
     env:
       targetName: container-desktop
-      QT_MODULES: "qt5compat qtwebsockets"
+      QT_MODULES: "qt5compat qtwebsockets qtshadertools"
     steps:
       - name: check out repository
         uses: actions/checkout@v4
@@ -76,8 +76,6 @@ jobs:
 
       - name: package
         if: startsWith(github.event.ref, 'refs/tags/')
-        env: 
-          EXTRA_QT_PLUGINS: qt5compat
         run: |
           export QML_SOURCES_PATHS=./
           echo "[Desktop Entry]" > container-desktop-appimage.desktop
@@ -87,7 +85,7 @@ jobs:
           echo "Type=Application" >> container-desktop-appimage.desktop
           echo "Exec=container-desktop" >> container-desktop-appimage.desktop
           linuxdeploy-x86_64.AppImage --plugin=qt --output=appimage --desktop-file=container-desktop-appimage.desktop --icon-file=app_icon.svg --executable=bin/release/container-desktop --appdir AppDir
-          mv container-desktop-*.AppImage ${{ env.targetName }}_appimage_x86_64.AppImage
+          mv container*.AppImage ${{ env.targetName }}_appimage_x86_64.AppImage
       
       - name: Calculate SHA256
         if: startsWith(github.event.ref, 'refs/tags/')

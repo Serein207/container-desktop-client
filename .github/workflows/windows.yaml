@@ -32,7 +32,7 @@ jobs:
     env: 
       targetName: container-desktop.exe
       fileName: container-desktop
-      QT_MODULES: "qt5compat qtwebsockets"
+      QT_MODULES: "qt5compat qtwebsockets qtshadertools"
 
     steps:
       - name: Check out repository
