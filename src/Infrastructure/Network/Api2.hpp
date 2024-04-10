@@ -7,8 +7,6 @@
 #include <QNetworkCookieJar>
 #include <QNetworkRequest>
 #include <QUrlQuery>
-#include <qjsonobject.h>
-#include <qstringliteral.h>
 #include <tuple>
 
 constexpr const char USER_AGENT[] = "Client/1";

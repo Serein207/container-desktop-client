@@ -3,7 +3,6 @@
 #include "Infrastructure/Network/NetworkClient.h"
 #include "Infrastructure/Utility/Result.hpp"
 #include "Model/VzTemp.h"
-#include <qlist.h>
 
 VzTemplateViewModel::VzTemplateViewModel(QObject* parent) : QAbstractListModel(parent) {}
 

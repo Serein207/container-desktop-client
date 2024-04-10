@@ -2,8 +2,6 @@
 #include "Infrastructure/Cache/CacheManager.h"
 #include "Infrastructure/Network/NetworkClient.h"
 #include "Infrastructure/Utility/Result.hpp"
-#include <qlist.h>
-#include <qtypes.h>
 
 PanelViewModel::PanelViewModel(QObject* parent) : QObject(parent) {}
 

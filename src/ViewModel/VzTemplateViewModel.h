@@ -5,7 +5,6 @@
 #include <QAbstractListModel>
 #include <QList>
 #include <QtQml/QQmlEngine>
-#include <qtmetamacros.h>
 
 class VzTemplateViewModel : public QAbstractListModel {
     Q_OBJECT

@@ -2,7 +2,6 @@
 #define PROFILE_VIEW_MODEL_H
 
 #include <QtQml/QQmlEngine>
-#include <qtmetamacros.h>
 
 class ProfileViewModel : public QObject {
     Q_OBJECT
