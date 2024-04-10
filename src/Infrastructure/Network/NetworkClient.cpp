@@ -14,7 +14,7 @@
 
 #define DOMAIN "cd.skimit.cn"
 static auto HTTP_API_GATEWAY = QStringLiteral("https://" DOMAIN);
-static auto WS_API_GATEWAY = QStringLiteral("ws://" DOMAIN);
+static auto WS_API_GATEWAY = QStringLiteral("wss://" DOMAIN);
 
 ContainerDesktop::NetworkClient::NetworkClient() : tcpSockify(new TcpSockify(this)) {
     // manager.setProxy(QNetworkProxy::NoProxy);
